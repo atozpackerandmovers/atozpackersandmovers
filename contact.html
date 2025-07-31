@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Contact Us</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header>
+    <nav><a href="index.html">Home</a> | <a href="services.html">Services</a> | <a href="contact.html">Contact</a></nav>
+  </header>
+<section class='intro'><h2>Reach Us Anytime</h2><p>📞 9338888550<br>📧 manojgatibbi506@gmail.com</p></section>
+  <!-- Contact Form Modal -->
+  <div id="formModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeForm()">&times;</span>
+      <h2>Contact Us</h2>
+      <form action="https://formsubmit.co/manojgatibbi506@gmail.com" method="POST">
+        <input type="text" name="Name" placeholder="Your Name" required/>
+        <input type="tel" name="Phone" placeholder="Contact Number" required/>
+        <input type="email" name="Email" placeholder="Your Email" required/>
+        <textarea name="Comments" placeholder="Your requirement..." rows="4" required></textarea>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating Buttons -->
+  <div class="float-buttons">
+    <a href="tel:+919433977442" class="btn call">Call Us</a>
+    <a href="https://wa.me/919433977442" class="btn whatsapp">WhatsApp</a>
+    <button class="btn form" onclick="openForm()">Enquiry Form</button>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 A to Z Packers & Movers. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function openForm(){ document.getElementById('formModal').style.display='block'; }
+    function closeForm(){ document.getElementById('formModal').style.display='none'; }
+  </script>
+</body>
+</html>
