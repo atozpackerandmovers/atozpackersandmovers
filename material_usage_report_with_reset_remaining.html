@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Material Usage Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #25d366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1ebd5d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Material Usage Report</h2>
+
+  <label for="reportDate">Date</label>
+  <input type="date" id="reportDate" />
+
+  <label for="staffName">Staff Name</label>
+  <select id="staffName">
+    <option value="">Select Staff</option>
+    <option>Sanjay</option>
+    <option>Ajay</option>
+    <option>Kaviraj</option>
+    <option>Somnath</option>
+    <option>Mahesh</option>
+    <option>Santosh</option>
+  </select>
+
+  <label for="totalCartons">Total Cartons</label>
+  <input type="number" id="totalCartons" placeholder="e.g., 14">
+
+  <label for="totalLamination">Total Lamination (%)</label>
+  <input type="number" id="totalLamination" placeholder="e.g., 100" step="0.1">
+
+  <label for="cartonsUsed">Cartons Used</label>
+  <input type="number" id="cartonsUsed" placeholder="e.g., 12">
+
+  <label for="laminationUsed">Lamination Used (%)</label>
+  <input type="number" id="laminationUsed" placeholder="e.g., 80" step="0.1">
+
+  <label for="fromLocation">From Location</label>
+  <input type="text" id="fromLocation" placeholder="e.g., Cuttack">
+
+  <label for="toLocation">To Location</label>
+  <input type="text" id="toLocation" placeholder="e.g., Berhampur">
+
+  <button onclick="sendToWhatsApp()">Send Report to WhatsApp</button>
+</div>
+
+<script>
+  const staffLastValues = {};
+
+  function formatDateToDDMMYYYY(dateStr) {
+    const date = new Date(dateStr);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  function sendToWhatsApp() {
+    const dateRaw = document.getElementById("reportDate").value;
+    const staff = document.getElementById("staffName").value;
+    const totalCartons = parseFloat(document.getElementById("totalCartons").value);
+    const totalLamination = parseFloat(document.getElementById("totalLamination").value);
+    const cartonsUsed = parseFloat(document.getElementById("cartonsUsed").value);
+    const laminationUsed = parseFloat(document.getElementById("laminationUsed").value);
+    const fromLocation = document.getElementById("fromLocation").value;
+    const toLocation = document.getElementById("toLocation").value;
+
+    if (!dateRaw || !staff || isNaN(totalCartons) || isNaN(totalLamination) || isNaN(cartonsUsed) || isNaN(laminationUsed) || !fromLocation || !toLocation) {
+      alert("Please fill out all fields correctly.");
+      return;
+    }
+
+    const formattedDate = formatDateToDDMMYYYY(dateRaw);
+
+    // Reset Total Cartons and Lamination to remaining if same staff
+    if (staffLastValues[staff]) {
+      totalCartons = staffLastValues[staff].remainingCartons;
+      totalLamination = staffLastValues[staff].remainingLamination;
+    }
+
+    const remainingCartons = totalCartons - cartonsUsed;
+    const remainingLamination = totalLamination - laminationUsed;
+
+    staffLastValues[staff] = {
+      remainingCartons: remainingCartons,
+      remainingLamination: remainingLamination
+    };
+
+    const message = `*Material's Report -*\nDate: ${formattedDate}\n${staff}\nTotal – CARTOONS (${totalCartons}), LAMINATION (${totalLamination}%)\nUSED – CARTOONS (${cartonsUsed}), LAMINATION (${laminationUsed}%)\nREMAINING – CARTOONS (${remainingCartons}), LAMINATION (${remainingLamination}%)\nUsed in this work from ${fromLocation} to ${toLocation}`;
+
+    const encodedMsg = encodeURIComponent(message);
+    const whatsappURL = `https://wa.me/9338888550?text=${encodedMsg}`;
+    window.open(whatsappURL, '_blank');
+  }
+</script>
+
+</body>
+</html>
