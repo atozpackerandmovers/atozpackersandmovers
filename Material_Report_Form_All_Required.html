@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Material Report from Driver</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"],
+    select,
+    input[type="date"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #218838;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Material Report from Driver</h2>
+    <form id="reportForm">
+      <div class="form-group">
+        <label for="driver">Driver Name *</label>
+        <select id="driver" required>
+          <option value="">Select</option>
+          <option>Ajay</option>
+          <option>Sanjay</option>
+          <option>Mahesh</option>
+          <option>Somnath</option>
+          <option>Kaviraj</option>
+          <option>Santosh</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="date">Date *</label>
+        <input type="date" id="date" required />
+      </div>
+
+      <div class="form-group">
+        <label for="foamType">Foam Type</label>
+        <select id="foamType" required>
+          <option value="">Select</option>
+          <option>Old</option>
+          <option>New</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="foamQuantity">Foam Quantity</label>
+        <input type="number" id="foamQuantity" required placeholder="Enter quantity" />
+      </div>
+
+      <div class="form-group">
+        <label for="foamLocation">Foam Location</label>
+        <select id="foamLocation" required>
+          <option value="">Select</option>
+          <option>Workplace</option>
+          <option>Office</option>
+        </select>
+      </div>
+
+      <div class="form-group"><label>Carton Boxes</label><input type="number" id="carton"></div>
+      <div class="form-group"><label>Lamination Rolls</label><input type="number" id="lamination"></div>
+      <div class="form-group"><label>Bubble Sheets</label><input type="number" id="bubble"></div>
+      <div class="form-group"><label>Cello Tapes</label><input type="number" id="cello"></div>
+      <div class="form-group"><label>Corrugated Sheets</label><input type="number" id="corrugated"></div>
+      <div class="form-group"><label>Ply Boards</label><input type="number" id="ply"></div>
+
+      <div class="form-group">
+        <label for="pala">Pala</label>
+        <select id="pala" required>
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="rasi">Rasi</label>
+        <select id="rasi" required>
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="tools">Tools</label>
+        <select id="tools" required>
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="paper">Paper</label>
+        <select id="paper" required>
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="stephen">Stephen</label>
+        <select id="stephen" required>
+          <option value="">Select</option>
+          <option>Yes</option>
+          <option>No</option>
+        </select>
+      </div>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const get = id => document.getElementById(id).value;
+      const phone = "9338888550";
+      const dateFormatted = get("date") ? new Date(get("date")).toLocaleDateString("en-GB") : "";
+
+      let message = `*Material Report from Driver*%0A`;
+      message += `👨‍✈️ *Driver:* ${get("driver")}%0A`;
+      message += `📅 *Date:* ${dateFormatted}%0A`;
+
+      if (get("foamType")) message += `🧽 *Foam Type:* ${get("foamType")}%0A`;
+      if (get("foamQuantity")) message += `📦 *Foam Quantity:* ${get("foamQuantity")}%0A`;
+      if (get("foamLocation")) message += `📍 *Foam Location:* ${get("foamLocation")}%0A`;
+
+      const materials = {
+        "Carton Boxes": get("carton"),
+        "Lamination Rolls": get("lamination"),
+        "Bubble Sheets": get("bubble"),
+        "Cello Tapes": get("cello"),
+        "Corrugated Sheets": get("corrugated"),
+        "Ply Boards": get("ply"),
+        "Pala": get("pala"),
+        "Rasi": get("rasi"),
+        "Tools": get("tools"),
+        "Paper": get("paper"),
+        "Stephen": get("stephen")
+      };
+
+      for (let key in materials) {
+        if (materials[key]) message += `📦 *${key}:* ${materials[key]}%0A`;
+      }
+
+      const url = `https://wa.me/91${phone}?text=${message}`;
+      window.open(url, '_blank');
+    });
+  </script>
+</body>
+</html>
