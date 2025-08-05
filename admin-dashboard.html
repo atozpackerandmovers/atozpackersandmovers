@@ -2,21 +2,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - A to Z Packers and Movers</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Admin Dashboard - A to Z Packers and Movers</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function verifyPassword() {
+      const input = document.getElementById("password").value;
+      const panel = document.getElementById("adminPanel");
+      const form = document.getElementById("loginForm");
+      const correctPassword = "atoz@2025";
+
+      if (input === correctPassword) {
+        form.style.display = "none";
+        panel.style.display = "block";
+      } else {
+        alert("❌ Incorrect password. Please try again.");
+      }
+    }
+  </script>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
   <!-- Header -->
   <header class="bg-red-600 text-white p-6 text-center">
-    <h1 class="text-3xl font-bold">Admin Dashboard</h1>
-    <p class="text-sm mt-1">Manage Enquiries & Track Orders in one place</p>
+    <h1 class="text-3xl font-bold">Admin Dashboard (Secure)</h1>
+    <p class="text-sm mt-1">Enter password to access</p>
   </header>
 
-  <!-- Dashboard Links -->
-  <section class="max-w-3xl mx-auto p-6 mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+  <!-- Password Form -->
+  <section id="loginForm" class="max-w-md mx-auto p-6 mt-10 bg-white shadow rounded text-center">
+    <label class="block mb-2 text-sm font-medium">Enter Admin Password:</label>
+    <input id="password" type="password" class="w-full px-4 py-2 border border-gray-300 rounded mb-4" />
+    <button onclick="verifyPassword()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Unlock</button>
+  </section>
+
+  <!-- Protected Admin Panel -->
+  <section id="adminPanel" style="display:none;" class="max-w-3xl mx-auto p-6 mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
     <a href="enquiry-admin.html" class="bg-white shadow-md rounded-lg p-6 text-center hover:bg-gray-100 transition">
       <h2 class="text-xl font-semibold text-red-600 mb-2">📋 Enquiry Records</h2>
       <p class="text-sm text-gray-600">View & manage customer enquiries</p>
@@ -27,15 +49,15 @@
     </a>
   </section>
 
-  <!-- Footer -->
-  <footer class="text-center text-sm text-gray-500 mt-10 mb-4">
-    &copy; 2025 A to Z Packers and Movers | Admin Dashboard
-  </footer>
-
   <!-- Floating Call Button -->
   <a href="tel:+919338888550" class="fixed bottom-4 right-4 bg-green-600 text-white text-xl p-4 rounded-full shadow-lg hover:bg-green-700 z-50" title="Call Now">
     📞
   </a>
+
+  <!-- Footer -->
+  <footer class="text-center text-sm text-gray-500 mt-10 mb-4">
+    &copy; 2025 A to Z Packers and Movers | Secure Admin Dashboard
+  </footer>
 
 </body>
 </html>
