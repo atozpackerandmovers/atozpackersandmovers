@@ -2,45 +2,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Get a Quote</title>
-  <link rel="stylesheet" href="styles.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Get Free Quote - A to Z Packers & Movers</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-  <header>
-    <nav><a href="index.html">Home</a> | <a href="services.html">Services</a> | <a href="contact.html">Contact</a></nav>
-  </header>
-<section class='intro'><h2>Free Quotation</h2><p>Submit your requirement and get an estimate quickly.</p></section>
-  <!-- Contact Form Modal -->
-  <div id="formModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeForm()">&times;</span>
-      <h2>Contact Us</h2>
-      <form action="https://formsubmit.co/manojgatibbi506@gmail.com" method="POST">
-        <input type="text" name="Name" placeholder="Your Name" required/>
-        <input type="tel" name="Phone" placeholder="Contact Number" required/>
-        <input type="email" name="Email" placeholder="Your Email" required/>
-        <textarea name="Comments" placeholder="Your requirement..." rows="4" required></textarea>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-xl mx-auto bg-white p-8 shadow-md rounded">
+    <h2 class="text-2xl font-bold mb-6 text-center text-red-600">Get Free Quote</h2>
+    <form action="https://formspree.io/f/yourformid" method="POST" class="space-y-4">
+      <input type="text" name="name" placeholder="Full Name" required class="w-full border px-4 py-2 rounded">
+      <input type="tel" name="phone" placeholder="Phone Number" required class="w-full border px-4 py-2 rounded">
+      <input type="email" name="email" placeholder="Email Address" required class="w-full border px-4 py-2 rounded">
+      <input type="text" name="from" placeholder="From City" required class="w-full border px-4 py-2 rounded">
+      <input type="text" name="to" placeholder="To City" required class="w-full border px-4 py-2 rounded">
+      <input type="date" name="date" placeholder="Moving Date" required class="w-full border px-4 py-2 rounded">
+      <textarea name="items" placeholder="Household Items Description" rows="4" class="w-full border px-4 py-2 rounded"></textarea>
+      <button type="submit" class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">Submit</button>
+    </form>
   </div>
-
-  <!-- Floating Buttons -->
-  <div class="float-buttons">
-    <a href="tel:+919433977442" class="btn call">Call Us</a>
-    <a href="https://wa.me/919433977442" class="btn whatsapp">WhatsApp</a>
-    <button class="btn form" onclick="openForm()">Enquiry Form</button>
-  </div>
-
-  <footer>
-    <p>&copy; 2025 A to Z Packers & Movers. All rights reserved.</p>
-  </footer>
-
-  <script>
-    function openForm(){ document.getElementById('formModal').style.display='block'; }
-    function closeForm(){ document.getElementById('formModal').style.display='none'; }
-  </script>
 </body>
 </html>
