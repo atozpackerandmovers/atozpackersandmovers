@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>A to Z Car Shifting Enquiry</title>
+<style>
+  :root {
+    --bg:#f7fafc;           /* light gray-blue */
+    --card:#ffffff;         /* white */
+    --text:#1f2937;         /* slate-800 */
+    --muted:#4b5563;        /* slate-600 */
+    --border:#e5e7eb;       /* gray-200 */
+    --brand:#ff7a1a;        /* soft orange */
+    --brand-2:#ffa94d;      /* lighter orange */
+    --accent:#2563eb;       /* soft blue accent */
+  }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans";
+    background: linear-gradient(180deg, #fbfdff 0%, var(--bg) 100%);
+    color:var(--text);
+    font-size:18px; /* larger base font */
+    line-height:1.5;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 16px 48px; }
+  .hero { text-align:center; padding: 8px 12px 24px; }
+  .brand {
+    display:inline-flex; align-items:center; gap:12px; font-weight:800; font-size: 22px; letter-spacing:.2px;
+  }
+  .brand .dot {
+    width:14px; height:14px; border-radius:999px;
+    background: radial-gradient(circle at 30% 30%, var(--brand-2), var(--brand));
+    box-shadow: 0 0 0 4px rgba(255,122,26,.18);
+  }
+  h1 { margin:10px 0 8px; font-size: clamp(26px, 4.2vw, 36px); }
+  p.sub { margin:0; color: var(--muted); font-size: 16px; }
+  .card {
+    margin-top: 22px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 18px; padding: 24px;
+    box-shadow: 0 12px 24px rgba(20, 36, 66, .06);
+  }
+  form { display:grid; gap:18px; }
+  @media (min-width:780px){
+    .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  }
+  label { font-size:14px; color:#374151; display:block; margin-bottom:8px; font-weight:600; }
+  .input, select, textarea, input[type="date"] {
+    width:100%; padding:16px 16px; border-radius:12px;
+    border:1.5px solid var(--border); background:#fff; color:var(--text);
+    outline:none; transition: box-shadow .2s, border-color .2s, transform .02s;
+    font-size:18px;
+  }
+  .input:focus, select:focus, textarea:focus, input[type="date"]:focus {
+    border-color:#c7d2fe; box-shadow: 0 0 0 4px rgba(37, 99, 235, .15);
+  }
+  textarea { min-height: 120px; resize: vertical; }
+  .hint { font-size:13px; color:#6b7280; margin-top:6px; }
+  .req { color:#dc2626; margin-left:4px; }
+  .phone-big {
+    font-size:22px; /* bigger phone font */
+    letter-spacing:.5px;
+  }
+  .btn {
+    appearance:none; border:0; border-radius:14px; padding:16px 18px; width:100%;
+    font-weight:800; letter-spacing:.3px; cursor:pointer; color:#fff; font-size:18px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    box-shadow: 0 10px 22px rgba(255,122,26,.24);
+    transition: transform .04s ease, filter .2s ease, box-shadow .2s ease;
+  }
+  .btn:hover { filter: brightness(1.03); box-shadow: 0 12px 28px rgba(255,122,26,.32); }
+  .btn:active { transform: translateY(1px); }
+  .note { color:#6b7280; font-size:14px; text-align:center; margin-top:8px;}
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="brand"><span class="dot"></span> A to Z Packers & Movers</div>
+      <h1>Car Shifting Enquiry Form</h1>
+      <p class="sub">Fill the details below — your enquiry opens in WhatsApp for +91 93388 88550.</p>
+    </div>
+
+    <div class="card">
+      <form id="enquiryForm" novalidate>
+        <div class="grid-2">
+          <div>
+            <label for="name">Full Name <span class="req">*</span></label>
+            <input class="input" id="name" name="name" type="text" placeholder="Your name" required />
+          </div>
+          <div>
+            <label for="phone">Contact Number <span class="req">*</span></label>
+            <input class="input phone-big" id="phone" name="phone" type="tel" placeholder="e.g., 9338888550 or +91…" 
+                   pattern="^(\+91[-\s]?)?[0]?\d{10}$" required />
+            <div class="hint">Enter 10-digit mobile (0 / +91 allowed). Bigger font for clarity.</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="date">Car Shifting Date <span class="req">*</span></label>
+            <input class="input" id="date" name="date" type="date" required />
+          </div>
+          <div>
+            <label for="car">Select Car <span class="req">*</span></label>
+            <select id="car" name="car" class="input" required>
+              <option value="">-- Choose your car --</option>
+              <option>Maruti Alto</option>
+              <option>Maruti WagonR</option>
+              <option>Maruti Swift</option>
+              <option>Maruti Baleno</option>
+              <option>Maruti Brezza</option>
+              <option>Tata Tiago</option>
+              <option>Tata Nexon</option>
+              <option>Hyundai i10</option>
+              <option>Hyundai Creta</option>
+              <option>Kia Seltos</option>
+              <option>Mahindra Thar</option>
+              <option>Toyota Innova</option>
+              <option>Honda City</option>
+              <option>Other (not listed)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <label for="fromCity">From City <span class="req">*</span></label>
+            <input class="input" id="fromCity" name="fromCity" type="text" placeholder="e.g., Cuttack, Odisha" required />
+          </div>
+          <div>
+            <label for="toCity">To City <span class="req">*</span></label>
+            <input class="input" id="toCity" name="toCity" type="text" placeholder="e.g., Mumbai, Maharashtra" required />
+          </div>
+        </div>
+
+        <div id="otherCarWrap" class="hidden">
+          <label for="otherCar">Car Name (Other)</label>
+          <input class="input" id="otherCar" name="otherCar" type="text" placeholder="Enter make & model" />
+        </div>
+
+        <div>
+          <label for="requirements">Special Requirements / Description</label>
+          <textarea class="input" id="requirements" name="requirements" placeholder="Any specific requests"></textarea>
+        </div>
+
+        <button class="btn" type="submit">Send Enquiry on WhatsApp</button>
+        <div class="note">You can review and send the message in WhatsApp app/browser.</div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  const WHATSAPP_NUMBER = "9338888550";
+  const $ = (id) => document.getElementById(id);
+
+  // Toggle "Other Car" input
+  $("car").addEventListener("change", function () {
+    if (this.value === "Other (not listed)") {
+      $("otherCarWrap").classList.remove("hidden");
+      $("otherCar").setAttribute("required","required");
+    } else {
+      $("otherCarWrap").classList.add("hidden");
+      $("otherCar").removeAttribute("required");
+      $("otherCar").value = "";
+    }
+  });
+
+  // Validation for flexible Indian numbers
+  function isValidPhone(str) {
+    return /^(\+91[-\s]?)?[0]?\d{10}$/.test(str.trim());
+  }
+
+  $("enquiryForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = $("name").value.trim();
+    let phone = $("phone").value.trim();
+    const date = $("date").value;
+    const carSel = $("car").value;
+    const otherCar = $("otherCar").value.trim();
+    const fromCity = $("fromCity").value.trim();
+    const toCity = $("toCity").value.trim();
+    const requirements = $("requirements").value.trim();
+
+    if (!name) { alert("Please enter your name."); $("name").focus(); return; }
+    if (!isValidPhone(phone)) { alert("Please enter a valid phone number."); $("phone").focus(); return; }
+    if (!date) { alert("Please choose the car shifting date."); $("date").focus(); return; }
+    if (!carSel) { alert("Please select your car."); $("car").focus(); return; }
+    if (carSel === "Other (not listed)" && !otherCar) { alert("Please enter your car make & model."); $("otherCar").focus(); return; }
+    if (!fromCity) { alert("Please enter From City."); $("fromCity").focus(); return; }
+    if (!toCity) { alert("Please enter To City."); $("toCity").focus(); return; }
+
+    // Normalize phone to +91XXXXXXXXXX
+    phone = phone.replace(/\s|-/g, "");   // remove spaces/dashes
+    phone = phone.replace(/^\+91/, "");   // strip +91 if present
+    phone = phone.replace(/^0/, "");      // strip leading 0
+    phone = "+91" + phone;                // add +91
+
+    const carFinal = (carSel === "Other (not listed)") ? otherCar : carSel;
+
+    const lines = [
+      "🚗 *Car Shifting Enquiry*",
+      `*Name:* ${name}`,
+      `*Mobile:* ${phone}`,
+      `*Shifting Date:* ${date}`,
+      `*Car:* ${carFinal}`,
+      `*From:* ${fromCity}`,
+      `*To:* ${toCity}`,
+      requirements ? `*Special Requirements:* ${requirements}` : null,
+      "",
+      "Please share quotation and next steps."
+    ].filter(Boolean);
+
+    const message = encodeURIComponent(lines.join("\n"));
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    window.open(url, "_blank");
+  });
+</script>
+</body>
+</html>
