@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A to Z Car Carrier Services - Booking Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+
+    .gradient-bg { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); }
+    .form-shadow { box-shadow: 0 25px 50px -12px rgba(0,0,0,.25); }
+
+    .input-focus {
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -1px rgba(0,0,0,.06);
+      transition: all .3s ease;
+    }
+    .input-focus:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -2px rgba(0,0,0,.05);
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+      transition: all .3s ease;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(37,211,102,.4); }
+
+    .car-icon { animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+    /* Subtle pulse for floating icons */
+    .pulse { animation: pulse 2.2s infinite; }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37,211,102,.4); }
+      70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(37,211,102,0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37,211,102,0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen gradient-bg py-8 px-4">
+  <div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <div class="car-icon text-6xl mb-4">🚛</div>
+      <h1 class="text-4xl font-bold text-white mb-2">A to Z Car Carrier Services</h1>
+      <p class="text-blue-100 text-lg">Professional & Reliable Car Transportation</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-2xl form-shadow p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-2">Book Your Car Transportation</h2>
+        <p class="text-gray-600">Fill in the details below and we'll get back to you instantly</p>
+      </div>
+
+      <form id="bookingForm" class="space-y-6" novalidate>
+        <!-- Full Name -->
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700 mb-2">
+            Full Name <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="fullName" name="fullName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus" placeholder="Enter your full name" />
+        </div>
+
+        <!-- Contact Number -->
+        <div>
+          <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-2">
+            Contact Number <span class="text-red-500">*</span>
+          </label>
+          <input type="tel" id="contactNumber" name="contactNumber" required inputmode="numeric" pattern="[0-9]{10}" maxlength="10" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus" placeholder="Enter 10-digit mobile number" />
+          <p class="text-xs text-gray-500 mt-1">Please enter a valid 10-digit mobile number</p>
+        </div>
+
+        <!-- Pickup -->
+        <div>
+          <label for="pickupLocation" class="block text-sm font-medium text-gray-700 mb-2">
+            Pickup Location <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="pickupLocation" name="pickupLocation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus" placeholder="Enter pickup city/location" />
+        </div>
+
+        <!-- Drop -->
+        <div>
+          <label for="dropLocation" class="block text-sm font-medium text-gray-700 mb-2">
+            Drop Location <span class="text-red-500">*</span>
+          </label>
+          <input type="text" id="dropLocation" name="dropLocation" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus" placeholder="Enter destination city/location" />
+        </div>
+
+        <!-- Car Model -->
+        <div>
+          <label for="carModel" class="block text-sm font-medium text-gray-700 mb-2">
+            Car Model <span class="text-red-500">*</span>
+          </label>
+          <select id="carModel" name="carModel" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus">
+            <option value="">Select your car model</option>
+            <optgroup label="Maruti Suzuki">
+              <option value="Maruti Alto">Maruti Alto</option>
+              <option value="Maruti Swift">Maruti Swift</option>
+              <option value="Maruti Baleno">Maruti Baleno</option>
+              <option value="Maruti Dzire">Maruti Dzire</option>
+              <option value="Maruti Vitara Brezza">Maruti Vitara Brezza</option>
+              <option value="Maruti Ertiga">Maruti Ertiga</option>
+              <option value="Maruti Ciaz">Maruti Ciaz</option>
+              <option value="Maruti XL6">Maruti XL6</option>
+            </optgroup>
+            <optgroup label="Hyundai">
+              <option value="Hyundai i10">Hyundai i10</option>
+              <option value="Hyundai i20">Hyundai i20</option>
+              <option value="Hyundai Verna">Hyundai Verna</option>
+              <option value="Hyundai Creta">Hyundai Creta</option>
+              <option value="Hyundai Venue">Hyundai Venue</option>
+              <option value="Hyundai Tucson">Hyundai Tucson</option>
+              <option value="Hyundai Santro">Hyundai Santro</option>
+            </optgroup>
+            <optgroup label="Tata">
+              <option value="Tata Tiago">Tata Tiago</option>
+              <option value="Tata Tigor">Tata Tigor</option>
+              <option value="Tata Nexon">Tata Nexon</option>
+              <option value="Tata Harrier">Tata Harrier</option>
+              <option value="Tata Safari">Tata Safari</option>
+              <option value="Tata Altroz">Tata Altroz</option>
+            </optgroup>
+            <optgroup label="Mahindra">
+              <option value="Mahindra XUV300">Mahindra XUV300</option>
+              <option value="Mahindra XUV500">Mahindra XUV500</option>
+              <option value="Mahindra XUV700">Mahindra XUV700</option>
+              <option value="Mahindra Scorpio">Mahindra Scorpio</option>
+              <option value="Mahindra Thar">Mahindra Thar</option>
+              <option value="Mahindra Bolero">Mahindra Bolero</option>
+            </optgroup>
+            <optgroup label="Honda">
+              <option value="Honda City">Honda City</option>
+              <option value="Honda Amaze">Honda Amaze</option>
+              <option value="Honda WR-V">Honda WR-V</option>
+              <option value="Honda Jazz">Honda Jazz</option>
+              <option value="Honda CR-V">Honda CR-V</option>
+            </optgroup>
+            <optgroup label="Toyota">
+              <option value="Toyota Innova">Toyota Innova</option>
+              <option value="Toyota Fortuner">Toyota Fortuner</option>
+              <option value="Toyota Yaris">Toyota Yaris</option>
+              <option value="Toyota Glanza">Toyota Glanza</option>
+              <option value="Toyota Urban Cruiser">Toyota Urban Cruiser</option>
+            </optgroup>
+            <optgroup label="Kia">
+              <option value="Kia Seltos">Kia Seltos</option>
+              <option value="Kia Sonet">Kia Sonet</option>
+              <option value="Kia Carnival">Kia Carnival</option>
+            </optgroup>
+            <optgroup label="Nissan">
+              <option value="Nissan Magnite">Nissan Magnite</option>
+              <option value="Nissan Kicks">Nissan Kicks</option>
+            </optgroup>
+            <optgroup label="Renault">
+              <option value="Renault Kwid">Renault Kwid</option>
+              <option value="Renault Triber">Renault Triber</option>
+              <option value="Renault Duster">Renault Duster</option>
+            </optgroup>
+            <optgroup label="Ford">
+              <option value="Ford EcoSport">Ford EcoSport</option>
+              <option value="Ford Endeavour">Ford Endeavour</option>
+              <option value="Ford Figo">Ford Figo</option>
+            </optgroup>
+            <optgroup label="Volkswagen">
+              <option value="Volkswagen Polo">Volkswagen Polo</option>
+              <option value="Volkswagen Vento">Volkswagen Vento</option>
+              <option value="Volkswagen Tiguan">Volkswagen Tiguan</option>
+            </optgroup>
+            <optgroup label="Skoda">
+              <option value="Skoda Rapid">Skoda Rapid</option>
+              <option value="Skoda Kushaq">Skoda Kushaq</option>
+              <option value="Skoda Octavia">Skoda Octavia</option>
+            </optgroup>
+            <optgroup label="Luxury Cars">
+              <option value="BMW 3 Series">BMW 3 Series</option>
+              <option value="BMW 5 Series">BMW 5 Series</option>
+              <option value="BMW X1">BMW X1</option>
+              <option value="Audi A4">Audi A4</option>
+              <option value="Audi Q3">Audi Q3</option>
+              <option value="Mercedes C-Class">Mercedes C-Class</option>
+              <option value="Mercedes E-Class">Mercedes E-Class</option>
+              <option value="Mercedes GLA">Mercedes GLA</option>
+            </optgroup>
+            <option value="Other">Other (Please specify)</option>
+          </select>
+
+          <!-- Other Car Model (hidden by default) -->
+          <div id="otherCarWrap" class="mt-3 hidden">
+            <label for="otherCarModel" class="block text-sm font-medium text-gray-700 mb-2">
+              Specify Car Model <span class="text-red-500">*</span>
+            </label>
+            <input type="text" id="otherCarModel" name="otherCarModel" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus" placeholder="Enter your car model" />
+          </div>
+        </div>
+
+        <!-- Tentative Date -->
+        <div>
+          <label for="shiftingDate" class="block text-sm font-medium text-gray-700 mb-2">
+            Tentative Date of Shifting <span class="text-red-500">*</span>
+          </label>
+          <input type="date" id="shiftingDate" name="shiftingDate" required min="" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus" />
+        </div>
+
+        <!-- Special Requirements -->
+        <div>
+          <label for="specialRequirement" class="block text-sm font-medium text-gray-700 mb-2">
+            Special Requirements/Description
+          </label>
+          <textarea id="specialRequirement" name="specialRequirement" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus resize-none" placeholder="Any special requirements, car condition details, or additional information..."></textarea>
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-4 flex justify-center">
+          <button type="submit" class="submit-btn text-white font-medium py-3 px-4 rounded text-sm flex items-center justify-center space-x-2">
+            <span>Submit via WhatsApp</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating Contact Icons -->
+  <div class="fixed right-6 bottom-6 flex flex-col space-y-4 z-50">
+    <a href="https://wa.me/919338888550" target="_blank" class="group relative" title="WhatsApp Us">
+      <div class="w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl pulse">
+        <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.893 3.386"/>
+        </svg>
+      </div>
+      <div class="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-3 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+        WhatsApp Us
+      </div>
+    </a>
+    <a href="tel:+919338888550" class="group relative" title="Call Now">
+      <div class="w-14 h-14 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-xl">
+        <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+        </svg>
+      </div>
+      <div class="absolute right-16 top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs px-3 py-2 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+        Call Now
+      </div>
+    </a>
+  </div>
+
+  <script>
+    // Set minimum date = today
+    document.getElementById('shiftingDate').min = new Date().toISOString().split('T')[0];
+
+    // Numeric-only and length cap for phone
+    const contactEl = document.getElementById('contactNumber');
+    contactEl.addEventListener('input', function () {
+      this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+    });
+
+    // Toggle "Other" Car Model input
+    const carModelEl = document.getElementById('carModel');
+    const otherWrap = document.getElementById('otherCarWrap');
+    const otherInput = document.getElementById('otherCarModel');
+
+    function handleOtherToggle() {
+      if (carModelEl.value === 'Other') {
+        otherWrap.classList.remove('hidden');
+        otherInput.setAttribute('required', 'required');
+      } else {
+        otherWrap.classList.add('hidden');
+        otherInput.removeAttribute('required');
+        otherInput.value = '';
+      }
+    }
+    carModelEl.addEventListener('change', handleOtherToggle);
+
+    // Trim helper
+    const trimVal = id => document.getElementById(id).value.trim();
+
+    // Submit handler
+    document.getElementById('bookingForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Read & trim
+      const fullName = trimVal('fullName');
+      const contactNumber = trimVal('contactNumber');
+      const pickupLocation = trimVal('pickupLocation');
+      const dropLocation = trimVal('dropLocation');
+      const carModel = carModelEl.value === 'Other' ? otherInput.value.trim() : carModelEl.value;
+      const shiftingDate = trimVal('shiftingDate');
+      const specialRequirement = trimVal('specialRequirement');
+
+      // Basic validations
+      if (!fullName) { alert('Please enter your full name.'); return; }
+      if (!/^\d{10}$/.test(contactNumber)) { alert('Please enter a valid 10-digit mobile number.'); return; }
+      if (!pickupLocation) { alert('Please enter pickup location.'); return; }
+      if (!dropLocation) { alert('Please enter drop location.'); return; }
+      if (!carModel) { alert('Please select/specify your car model.'); return; }
+      if (!shiftingDate) { alert('Please select your tentative shifting date.'); return; }
+
+      // WhatsApp message
+      let message = `🚛 *A to Z Car Carrier Services - New Booking Enquiry*\n\n`;
+      message += `👤 *Name:* ${fullName}\n`;
+      message += `📱 *Contact:* ${contactNumber}\n`;
+      message += `📍 *Pickup:* ${pickupLocation}\n`;
+      message += `🎯 *Drop:* ${dropLocation}\n`;
+      message += `🚗 *Car Model:* ${carModel}\n`;
+      message += `📅 *Date:* ${shiftingDate}\n`;
+      if (specialRequirement) {
+        message += `\n📝 *Special Requirements:*\n${specialRequirement}\n`;
+      }
+      message += `\n✨ *Thank you for choosing A to Z Car Carrier Services!*`;
+
+      const encodedMessage = encodeURIComponent(message);
+      // Use full international format for reliability
+      const whatsappURL = `https://wa.me/919338888550?text=${encodedMessage}`;
+
+      window.open(whatsappURL, '_blank');
+    });
+
+    // Run once on load to ensure correct "Other" visibility
+    handleOtherToggle();
+  </script>
+</body>
+</html>
