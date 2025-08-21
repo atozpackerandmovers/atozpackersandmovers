@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>A to Z Packers & Movers — 4th Day Fooding (Groups + Today Panel)</title>
+<style>
+  :root{
+    /* Light, clean, clickable */
+    --bg:#f7faff; --card:#ffffff; --text:#0b1220; --muted:#5b6b85;
+    --blue:#2563eb; --blue-2:#1e4fd8; --blue-4:#cfe1ff;
+    --danger:#dc2626; --ok:#16a34a; --warn:#b45309;
+
+    --radius:16px;
+    --shadow-lg:0 14px 28px rgba(20,40,120,.10), 0 4px 12px rgba(10,30,80,.06);
+    --shadow-md:0 8px 18px rgba(20,40,120,.08), 0 3px 10px rgba(10,30,80,.05);
+    --shadow-sm:0 4px 10px rgba(20,40,120,.06);
+    --click: translateY(1px);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+  .wrap{max-width:1200px;margin:0 auto;padding:16px}
+  .header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--blue-4)}
+  .titlebar{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  h1{font-size:22px;font-weight:900;margin:0}
+  .sub{color:var(--muted);font-size:12px;font-weight:700}
+  .badge{display:inline-block;background:#eef4ff;color:#0b1220;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;border:1px solid var(--blue-4)}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:16px;margin:12px 0;border:1.5px solid var(--blue-4)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--muted);font-size:12px;font-weight:700}
+  label{font-size:11px;color:var(--muted);font-weight:900;letter-spacing:.2px}
+  select,input{padding:12px;border:1.5px solid var(--blue-4);border-radius:12px;background:#fff;font-size:15px;min-width:0}
+  select:focus,input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+  button{padding:12px 14px;border:0;border-radius:12px;font-weight:900;cursor:pointer;background:var(--blue);color:#fff;box-shadow:var(--shadow-md);transition:transform .05s ease, background .2s ease, box-shadow .2s ease}
+  button:hover{background:var(--blue-2)} button:active{transform:var(--click)}
+  .btn-ghost{background:#eef4ff;color:#0b1220;border:1.5px solid var(--blue-4)}
+  .btn-danger{background:var(--danger)} .btn-ok{background:var(--ok)} .btn-warn{background:#f59e0b}
+
+  .chip{font-size:11px;padding:2px 8px;border-radius:999px;background:#eef4ff;border:1px solid var(--blue-4);font-weight:800}
+  .due{background:#e9fce9;border-color:#86efac}
+
+  .list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .pill{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border:1.5px solid var(--blue-4);border-radius:12px;padding:10px;background:#fff;box-shadow:var(--shadow-sm)}
+  .name{font-weight:900} .status-strong{font-weight:900} .money-strong{font-weight:900}
+
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;border:1.5px solid var(--blue-4)}
+  th,td{border-bottom:1px solid var(--blue-4);padding:10px;text-align:left;font-size:13px}
+  th{font-size:11px;color:var(--muted);font-weight:900;text-transform:uppercase;letter-spacing:.2px}
+
+  .g-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .g-meta{display:flex;gap:10px;flex-wrap:wrap}
+  .g-collapsed{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1.5px dashed var(--blue-4);padding:8px 12px;border-radius:10px;background:#fbfdff}
+
+  .banner{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#f3f8ff;border:1.5px solid var(--blue-4);color:#0b1220;padding:12px 14px;border-radius:12px;margin-top:8px;box-shadow:var(--shadow-sm);font-weight:900}
+
+  .modal-backdrop{position:fixed;inset:0;background:rgba(9,16,40,.45);display:none;align-items:center;justify-content:center;z-index:1000}
+  .modal{width:min(680px,95vw);background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);padding:16px;border:1.5px solid var(--blue-4)}
+  .modal h3{margin:0 0 8px 0;font-size:18px;font-weight:900}
+  .warnbox{background:#fff7ed;border:1.5px solid #fcd34d;color:#7c2d12;padding:12px;border-radius:12px;font-weight:900}
+
+  @media(max-width:980px){.kpi{grid-template-columns:1fr 1fr}} @media(max-width:560px){.kpi{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="wrap">
+      <div class="titlebar">
+        <div>
+          <h1>4th Day Fooding Manager</h1>
+          <div class="sub">A to Z Packers &amp; Movers • Asia/Kolkata (IST)</div>
+        </div>
+        <span class="badge">Groups • Collapse • Today Panel</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="wrap">
+    <!-- Team & Add -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div style="font-weight:900">Team & Groups</div>
+          <div class="muted">➕ Add is compact: form appears when needed and hides automatically.</div>
+        </div>
+        <div class="row">
+          <button id="showAddFormBtn" class="btn-ghost">➕ Add Worker/Driver</button>
+          <button id="autoBalanceBtn" title="Auto-split into groups of 5">Auto-Balance (×5)</button>
+        </div>
+      </div>
+
+      <!-- Hidden Add Form (toggles; hides after save). Includes ✖ close -->
+      <div id="addForm" class="card" style="display:none;margin-top:10px;padding:12px">
+        <div class="row" style="justify-content:space-between">
+          <div style="font-weight:900">Add New Member</div>
+          <button id="closeAddFormBtn" class="btn-ghost" title="Close">✖ Close</button>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <div>
+            <label>Role</label><br>
+            <select id="role">
+              <option value="worker">Worker (₹150/day)</option>
+              <option value="driver">Driver (₹250/day)</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:240px">
+            <label>Name</label><br>
+            <input id="name" type="text" placeholder="e.g., Ajay" />
+          </div>
+          <div>
+            <label>Status</label><br>
+            <select id="status">
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+            </select>
+          </div>
+        </div>
+        <div class="row" style="justify-content:flex-end;margin-top:8px">
+          <button id="addBtn" class="btn-ok">✅ Save Member</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start & Schedule -->
+    <div class="card">
+      <div style="font-weight:900">Group Schedule</div>
+      <div class="muted">Stagger groups every 2 days. Each group repeats every 4 days.</div>
+      <div class="row" style="margin-top:6px">
+        <div>
+          <label>Global Start Date (IST)</label><br>
+          <input type="date" id="startDate">
+        </div>
+        <button id="applyStartBtn">Apply Start & Stagger</button>
+      </div>
+    </div>
+
+    <!-- Groups (each has ✖ Close / ▾ Expand) -->
+    <div class="card">
+      <div style="font-weight:900;margin-bottom:6px">Groups</div>
+      <div id="groupsGrid" class="list"></div>
+    </div>
+
+    <!-- TODAY CALCULATOR PANEL (auto appears) -->
+    <div id="todayPanel" class="card" style="display:none">
+      <div style="font-weight:900;margin-bottom:6px">Today Calculator Panel</div>
+      <div id="todayDueWrap" class="list"></div>
+      <div class="row" id="todayAgg" style="margin-top:8px;justify-content:space-between;align-items:center"></div>
+      <div class="row" style="justify-content:flex-end;margin-top:8px">
+        <button class="btn-ghost" id="previewAllBtn">Preview All WhatsApp</button>
+        <button id="payAllBtn">Pay All Due Today</button>
+      </div>
+    </div>
+
+    <!-- History -->
+    <div class="card">
+      <div style="font-weight:900;margin-bottom:6px">Payment History (All Groups)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Date (IST)</th><th>Group</th>
+            <th>Workers (P/T)</th><th>Drivers (P/T)</th>
+            <th>Workers ₹</th><th>Drivers ₹</th><th>Penalties ₹</th><th>Grand (Net) ₹</th>
+            <th>Next Date</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"><tr><td colspan="10" class="muted">No records yet.</td></tr></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Reminder Modal -->
+  <div id="backdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="remTitle">
+    <div class="modal">
+      <h3 id="remTitle">Important Reminder</h3>
+      <div class="warnbox">⚠️ <b>First submit your material report before fooding payment!</b></div>
+      <p class="muted" style="margin-top:8px">Confirm only after your material report is submitted. This step appears every cycle.</p>
+      <div class="row" style="justify-content:flex-end;gap:8px;margin-top:8px">
+        <button class="btn-ghost" id="cancelReminderBtn">Cancel</button>
+        <button class="btn-ok" id="confirmReminderBtn">Report Submitted — Proceed</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ===== Config ===== */
+const RATE_WORKER = 150, RATE_DRIVER = 250, DAYS = 4;
+const PHONE_ADMIN = "+919338888550";
+const MAX_PER_GROUP = 5;
+const RETAIN_MIN_DAYS = 60, PRUNE_OLDER_THAN_DAYS = 0;
+
+/* ===== Storage Keys (v4) ===== */
+const PEOPLE_KEY = "azpm_people_g4";
+const GROUPS_KEY = "azpm_groups_g4";         // includes "collapsed" flag
+const SCHED_KEY  = "azpm_group_sched_g4";
+const GHIST_KEY  = "azpm_group_history_g4";
+/* penalties with REASON:
+   { [groupId]: { [personId]: { amount: number, reason: string } } } */
+const PEN_KEY    = "azpm_penalties_by_group_g4";
+
+/* ===== State ===== */
+let people = JSON.parse(localStorage.getItem(PEOPLE_KEY)||"[]");
+let groups = JSON.parse(localStorage.getItem(GROUPS_KEY)||"[]");
+let groupSchedule = JSON.parse(localStorage.getItem(SCHED_KEY)||"{}");
+let groupHistory = JSON.parse(localStorage.getItem(GHIST_KEY)||"[]");
+let penalties = JSON.parse(localStorage.getItem(PEN_KEY)||"{}");
+
+/* ===== Helpers ===== */
+const $ = s => document.querySelector(s);
+const toINR = n => new Intl.NumberFormat("en-IN",{style:"currency",currency:"INR",maximumFractionDigits:0}).format(n);
+const fmtDateIST = d => new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Kolkata",year:"numeric",month:"short",day:"2-digit"}).format(d);
+const todayIST = () => new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Kolkata"}));
+function savePeople(){ localStorage.setItem(PEOPLE_KEY, JSON.stringify(people)); }
+function saveGroups(){ localStorage.setItem(GROUPS_KEY, JSON.stringify(groups)); }
+function saveSchedule(){ localStorage.setItem(SCHED_KEY, JSON.stringify(groupSchedule)); }
+function saveHistory(){ localStorage.setItem(GHIST_KEY, JSON.stringify(groupHistory)); }
+function savePenalties(){ localStorage.setItem(PEN_KEY, JSON.stringify(penalties)); }
+function cryptoRandom(){ if(window.crypto?.getRandomValues){const a=new Uint32Array(2);crypto.getRandomValues(a);return (a[0].toString(36)+a[1].toString(36)).slice(0,12);} return Math.random().toString(36).slice(2,14); }
+function getGroupById(id){ return groups.find(g=>g.id===id); }
+function getPenaltyObj(gid,pid){ const obj=(penalties[gid]||{})[pid]||{amount:0,reason:""}; return { amount:Math.max(0,Number(obj.amount||0)), reason:String(obj.reason||"").trim() }; }
+function setPenalty(gid,pid,amount,reason){
+  penalties[gid]=penalties[gid]||{};
+  const amt=Math.max(0,Math.floor(Number(amount||0))); const reas=String(reason||"").trim();
+  if(amt<=0 && !reas){ delete penalties[gid][pid]; if(Object.keys(penalties[gid]).length===0) delete penalties[gid]; }
+  else { penalties[gid][pid]={amount:amt,reason:reas}; }
+  savePenalties();
+}
+
+/* ===== Retention (keep ≥ 60 days) ===== */
+function daysBetween(a,b){ return Math.floor((a.getTime()-b.getTime())/86400000); }
+function cleanupHistory(){
+  if(PRUNE_OLDER_THAN_DAYS<=0) return;
+  const now=todayIST();
+  groupHistory = groupHistory.filter(rec=>{
+    const age=daysBetween(now,new Date(rec.paymentISO));
+    if(age<=RETAIN_MIN_DAYS) return true;
+    return age<=PRUNE_OLDER_THAN_DAYS;
+  });
+  saveHistory();
+}
+
+/* ===== Groups bootstrap ===== */
+function ensureGroups(count=6){
+  if(groups.length) return;
+  const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  for(let i=0;i<count;i++){ groups.push({id:letters[i], name:`Group ${letters[i]}`, memberIds:[], collapsed:false}); }
+  saveGroups();
+}
+
+/* ===== UI: Add form show/hide ===== */
+const addForm = $("#addForm");
+$("#showAddFormBtn").onclick = ()=> addForm.style.display = (addForm.style.display==="none"||!addForm.style.display) ? "block" : "none";
+$("#closeAddFormBtn").onclick = ()=> addForm.style.display = "none";
+
+/* ===== Add member (auto-hide after save) ===== */
+$("#addBtn").onclick = ()=>{
+  const name = ($("#name").value||"").trim();
+  const role = $("#role").value;
+  const status = $("#status").value;
+  if(!name){ alert("Enter a name"); return; }
+  if(people.some(p=>p.name.toLowerCase()===name.toLowerCase() && p.role===role)){
+    alert("Name already exists in this role."); return;
+  }
+  const id=cryptoRandom();
+  people.push({id,name,role,status});
+  savePeople();
+
+  $("#name").value=""; $("#role").value="worker"; $("#status").value="present";
+  addForm.style.display="none";
+
+  renderEverything();
+  toast("✅ Added: "+name);
+};
+
+/* ===== Auto-balance into groups of 5 ===== */
+$("#autoBalanceBtn").onclick = ()=>{
+  if(!groups.length) ensureGroups(Math.ceil(people.length/MAX_PER_GROUP)||6);
+  groups.forEach(g=> g.memberIds=[]);
+  const sorted = people.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  let gi=0;
+  sorted.forEach(p=>{
+    while(gi<groups.length && groups[gi].memberIds.length>=MAX_PER_GROUP) gi++;
+    if(gi>=groups.length){
+      const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ", nextId = letters[groups.length] || `G${groups.length+1}`;
+      groups.push({id:nextId,name:`Group ${nextId}`,memberIds:[], collapsed:false});
+    }
+    groups[gi].memberIds.push(p.id);
+  });
+  saveGroups();
+  renderEverything();
+  toast("✅ Groups auto-balanced (×5).");
+};
+
+/* ===== Start / stagger schedule ===== */
+$("#applyStartBtn").onclick = ()=>{
+  const ds=$("#startDate").value;
+  if(!ds){ alert("Pick a start date"); return; }
+  const base=new Date(ds+"T00:00:00+05:30");
+  groups.forEach((g,i)=> groupSchedule[g.id] = new Date(base.getTime()+i*2*86400000).toISOString());
+  saveSchedule();
+  renderEverything();
+  toast("📅 Staggered schedule applied.");
+};
+
+/* ===== Due logic ===== */
+function isGroupDue(gid){
+  const iso=groupSchedule[gid]; if(!iso) return false;
+  const due=new Date(iso), today=todayIST();
+  const d0=new Date(due); d0.setHours(0,0,0,0);
+  const t0=new Date(today); t0.setHours(0,0,0,0);
+  return t0.getTime()>=d0.getTime();
+}
+
+/* ===== Computations ===== */
+function computeGroupSnapshot(g){
+  const members=g.memberIds.map(id=>people.find(p=>p.id===id)).filter(Boolean);
+  let wcT=0,dcT=0,wcP=0,dcP=0, wt=0,dt=0, pen=0;
+  const roster=members.map(p=>{
+    const pd=p.role==="worker"?RATE_WORKER:RATE_DRIVER;
+    const base=(p.status==="present")?pd*DAYS:0;
+    const {amount:pa,reason:pr}=getPenaltyObj(g.id,p.id);
+    const eff=(p.status==="present")?Math.min(pa,base):0;
+    const net=Math.max(0,base-eff);
+    if(p.role==="worker"){ wcT++; wt+=base; if(p.status==="present") wcP++; }
+    else { dcT++; dt+=base; if(p.status==="present") dcP++; }
+    pen+=eff;
+    return {id:p.id,name:p.name,role:p.role,status:p.status,baseAmount:base,penalty:eff,penaltyReason:pr,netPaid:net,paid:p.status==="present"};
+  });
+  const grand=Math.max(0,wt+dt-pen);
+  return {members, wcT,wcP,dcT,dcP, wt,dt, pen, grand, roster};
+}
+function groupsDueToday(){ return groups.filter(g=>isGroupDue(g.id)); }
+function computeAggregateToday(){
+  const due = groupsDueToday();
+  let sumW=0,sumD=0,sumPen=0,sumNet=0, wP=0,wT=0,dP=0,dT=0;
+  const per = due.map(g=>{
+    const s=computeGroupSnapshot(g);
+    sumW+=s.wt; sumD+=s.dt; sumPen+=s.pen; sumNet+=s.grand;
+    wP+=s.wcP; wT+=s.wcT; dP+=s.dcP; dT+=s.dcT;
+    return {group:g, snap:s};
+  });
+  return {per,sumW,sumD,sumPen,sumNet, wP,wT,dP,dT};
+}
+
+/* ===== Renders ===== */
+function renderGroups(){
+  const grid=$("#groupsGrid"); grid.innerHTML="";
+  if(!groups.length){ const d=document.createElement("div"); d.className="muted"; d.textContent="No groups yet. Click Auto-Balance to create groups."; grid.appendChild(d); return; }
+
+  groups.forEach(g=>{
+    const due=isGroupDue(g.id);
+    const nextISO=groupSchedule[g.id];
+    const s=computeGroupSnapshot(g);
+
+    if(g.collapsed){
+      // collapsed slim row
+      const row=document.createElement("div");
+      row.className="g-collapsed";
+      row.innerHTML = `
+        <div class="muted" style="display:flex;flex-direction:column;gap:4px">
+          <div><b>${g.name}</b> ${due?'<span class="chip due">Due Today</span>':'<span class="chip">Scheduled</span>'} • Members ${s.members.length}/${MAX_PER_GROUP} • Next ${nextISO?fmtDateIST(new Date(nextISO)):'—'}</div>
+          <div>W P/T ${s.wcP}/${s.wcT} | D P/T ${s.dcP}/${s.dcT} • W ₹${s.wt} • D ₹${s.dt} • Pen ₹${s.pen} • <b>Net ₹${s.grand}</b></div>
+        </div>
+        <div class="row">
+          <button class="btn-ghost" data-expand="${g.id}">▾ Expand</button>
+          <button class="btn-ghost" data-preview="${g.id}">Preview WA</button>
+          <button ${due?'':'disabled'} data-pay="${g.id}">${due?'Pay Now':'Pay (when due)'}</button>
+        </div>
+      `;
+      grid.appendChild(row);
+    }else{
+      // expanded card
+      const card=document.createElement("div");
+      card.className="card";
+      card.innerHTML = `
+        <div class="g-head">
+          <div>
+            <div style="font-weight:900">${g.name} ${due?'<span class="chip due">Due Today</span>':'<span class="chip">Scheduled</span>'}</div>
+            <div class="g-meta muted">
+              <span>Members: ${s.members.length}/${MAX_PER_GROUP}</span>
+              <span>Next: ${nextISO?fmtDateIST(new Date(nextISO)):'—'}</span>
+              <span>W P/T ${s.wcP}/${s.wcT} | D P/T ${s.dcP}/${s.dcT}</span>
+            </div>
+          </div>
+          <div class="row">
+            <button class="btn-ghost" data-preview="${g.id}">Preview WA</button>
+            <button ${due?'':'disabled'} data-pay="${g.id}">${due?'Pay Now':'Pay (when due)'}</button>
+            <button class="btn-ghost" data-toggle-add="${g.id}">Add Member</button>
+            <button class="btn-danger" data-collapse="${g.id}">✖ Close</button>
+          </div>
+        </div>
+
+        <!-- Members list -->
+        <div class="list" style="margin-top:8px" id="m-${g.id}"></div>
+
+        <!-- Minimal add row (hidden by default; appears on Add Member; auto-hides after add) -->
+        <div class="row" id="ar-${g.id}" style="display:none;margin-top:8px">
+          <div style="flex:1;min-width:220px">
+            <label>Add to ${g.name}</label><br>
+            <select data-addsel="${g.id}" style="width:100%"></select>
+          </div>
+          <button class="btn-ok" data-addbtn="${g.id}">Add</button>
+          <button class="btn-ghost" data-closeadd="${g.id}">✖ Close</button>
+        </div>
+      `;
+      grid.appendChild(card);
+
+      // members
+      const mwrap=card.querySelector(`#m-${g.id}`);
+      if(!s.members.length){
+        const d=document.createElement("div"); d.className="muted"; d.textContent="No members in this group."; mwrap.appendChild(d);
+      }else{
+        s.members.forEach(p=>{
+          const pd=p.role==="worker"?RATE_WORKER:RATE_DRIVER;
+          const base=(p.status==="present")?pd*DAYS:0;
+          const {amount:pa,reason:pr}=getPenaltyObj(g.id,p.id);
+          const eff=(p.status==="present")?Math.min(pa,base):0;
+          const row=document.createElement("div");
+          row.className="pill";
+          row.innerHTML = `
+            <div>
+              <div class="name">${p.name}</div>
+              <div class="muted">
+                ${p.role==="worker"?"Worker":"Driver"} • <span class="status-strong">${p.status==="present"?"Present":"Absent"}</span>
+                ${pa>0?`• Penalty: <span class="status-strong">${toINR(pa)}</span>${pr?` — <span class="status-strong">${pr}</span>`:""}`:""}
+              </div>
+            </div>
+            <div class="row">
+              <button class="btn-ghost" data-toggle="${g.id}|${p.id}">Toggle P/A</button>
+              <button class="btn-warn" data-pen="${g.id}|${p.id}">Penalty</button>
+              <button class="btn-danger" data-remove="${g.id}|${p.id}">Remove</button>
+            </div>
+            <div class="muted">Base: <span class="money-strong">${toINR(base)}</span></div>
+          `;
+          mwrap.appendChild(row);
+        });
+      }
+
+      // populate add select with available
+      const sel=card.querySelector(`[data-addsel="${g.id}"]`);
+      const assigned=new Set(groups.flatMap(x=>x.memberIds));
+      const options=people.filter(p=>!assigned.has(p.id)).sort((a,b)=>a.name.localeCompare(b.name));
+      if(!options.length){
+        const o=document.createElement("option"); o.disabled=true; o.selected=true; o.textContent="No available members";
+        sel.appendChild(o);
+      }else{
+        options.forEach(p=>{
+          const o=document.createElement("option");
+          o.value=p.id; o.textContent=(p.role==="worker"?"👷 ":"🚚 ")+p.name;
+          sel.appendChild(o);
+        });
+      }
+    }
+  });
+
+  // Bind (common to both modes)
+  [...document.querySelectorAll("[data-preview]")].forEach(b=> b.onclick=()=> window.open(buildWhatsappReportForGroup(b.dataset.preview,null),"_blank"));
+  [...document.querySelectorAll("[data-pay]")].forEach(b=> b.onclick=()=> handlePayClick(b.dataset.pay));
+
+  // Expanded-only controls
+  [...document.querySelectorAll("[data-toggle-add]")].forEach(b=> b.onclick=()=> toggleAddRow(b.dataset.toggleAdd,true));
+  [...document.querySelectorAll("[data-closeadd]")].forEach(b=> b.onclick=()=> toggleAddRow(b.dataset.closeadd,false));
+  [...document.querySelectorAll("[data-addbtn]")].forEach(b=>{
+    b.onclick=()=>{
+      const gid=b.dataset.addbtn;
+      const sel=document.querySelector(`[data-addsel="${gid}"]`);
+      const pid=sel?.value;
+      if(!pid) { alert("Select a member"); return; }
+      const g=getGroupById(gid);
+      if(g.memberIds.length>=MAX_PER_GROUP){ alert("Group full (5/5)"); return; }
+      g.memberIds.push(pid); saveGroups();
+      renderEverything();
+      toggleAddRow(gid,false);
+      toast("✅ Member added to "+g.name);
+    };
+  });
+  [...document.querySelectorAll("[data-remove]")].forEach(b=> b.onclick=()=>{
+    const [gid,pid]=b.dataset.remove.split("|"); const g=getGroupById(gid);
+    g.memberIds=g.memberIds.filter(x=>x!==pid); saveGroups(); renderEverything();
+  });
+  [...document.querySelectorAll("[data-toggle]")].forEach(b=> b.onclick=()=>{
+    const [gid,pid]=b.dataset.toggle.split("|"); const p=people.find(x=>x.id===pid); if(!p) return;
+    p.status=p.status==="present"?"absent":"present"; savePeople(); renderEverything();
+  });
+  [...document.querySelectorAll("[data-pen]")].forEach(b=> b.onclick=()=>{
+    const [gid,pid]=b.dataset.pen.split("|");
+    const {amount:curAmt, reason:curWhy} = getPenaltyObj(gid,pid);
+    const vAmt = prompt("Penalty amount (₹) for this cycle (0 to clear):", curAmt>0?curAmt:"");
+    if(vAmt===null) return;
+    const amt = Math.max(0, Math.floor(Number(vAmt||0)));
+    let why = curWhy;
+    if(amt>0){
+      const vWhy = prompt("Penalty reason (e.g., Late attendance, Material damage):", curWhy||"");
+      if(vWhy===null) return; why = String(vWhy||"").trim();
+    }else{ why=""; }
+    setPenalty(gid,pid,amt,why);
+    renderEverything();
+  });
+
+  // Collapse/Expand
+  [...document.querySelectorAll("[data-collapse]")].forEach(b=> b.onclick=()=>{
+    const gid=b.dataset.collapse; const g=getGroupById(gid); if(!g) return;
+    g.collapsed=true; saveGroups(); renderEverything();
+  });
+  [...document.querySelectorAll("[data-expand]")].forEach(b=> b.onclick=()=>{
+    const gid=b.dataset.expand; const g=getGroupById(gid); if(!g) return;
+    g.collapsed=false; saveGroups(); renderEverything();
+  });
+}
+
+function toggleAddRow(groupId, show){
+  const row=document.querySelector(`#ar-${groupId}`); if(!row) return;
+  row.style.display = show ? "flex" : "none";
+}
+
+/* ===== Today Calculator Panel ===== */
+function renderTodayPanel(){
+  const panel=$("#todayPanel");
+  const anyCollapsed = groups.some(g=>g.collapsed);
+  const due = groupsDueToday();
+  if(!(anyCollapsed || due.length)){ panel.style.display="none"; return; }
+
+  panel.style.display="block";
+  const dueWrap=$("#todayDueWrap"); dueWrap.innerHTML="";
+
+  // Section 1: Due groups list (with per-group quick actions)
+  if(due.length){
+    due.forEach(g=>{
+      const s=computeGroupSnapshot(g);
+      const row=document.createElement("div");
+      row.className="g-collapsed";
+      row.innerHTML = `
+        <div class="muted" style="display:flex;flex-direction:column;gap:4px">
+          <div><b>${g.name}</b> <span class="chip due">Due Today</span> • Members ${s.members.length}/${MAX_PER_GROUP} • W P/T ${s.wcP}/${s.wcT} | D P/T ${s.dcP}/${s.dcT}</div>
+          <div>W ₹${s.wt} • D ₹${s.dt} • Pen ₹${s.pen} • <b>Net ₹${s.grand}</b></div>
+        </div>
+        <div class="row">
+          <button class="btn-ghost" data-preview="${g.id}">Preview WA</button>
+          <button data-pay="${g.id}">Pay Now</button>
+        </div>
+      `;
+      dueWrap.appendChild(row);
+    });
+  }else{
+    const d=document.createElement("div"); d.className="muted"; d.textContent="No groups are due today."; dueWrap.appendChild(d);
+  }
+
+  // Section 2: Aggregate
+  const agg=computeAggregateToday();
+  const aggDiv=$("#todayAgg");
+  aggDiv.innerHTML = `
+    <div class="muted">
+      <b>Aggregate Today:</b>
+      👷 W ₹${agg.sumW} • 🚚 D ₹${agg.sumD} • ⚡ Pen ₹${agg.sumPen} • <b>💵 Net ₹${agg.sumNet}</b>
+      • Attendance: W ${agg.wP}/${agg.wT}, D ${agg.dP}/${agg.dT}
+    </div>
+    <div class="muted">${groups.filter(g=>g.collapsed).length} group(s) collapsed</div>
+  `;
+
+  // Rebind (share handlers)
+  [...panel.querySelectorAll("[data-preview]")].forEach(b=> b.onclick=()=> window.open(buildWhatsappReportForGroup(b.dataset.preview,null),"_blank"));
+  [...panel.querySelectorAll("[data-pay]")].forEach(b=> b.onclick=()=> handlePayClick(b.dataset.pay));
+}
+
+/* ===== History table ===== */
+function renderHistory(){
+  const body=$("#historyBody");
+  if(!groupHistory.length){ body.innerHTML='<tr><td colspan="10" class="muted">No records yet.</td></tr>'; return; }
+  body.innerHTML="";
+  groupHistory.slice().reverse().forEach((rec,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td>${groupHistory.length-i}</td>
+      <td>${fmtDateIST(new Date(rec.paymentISO))}</td>
+      <td>${rec.groupName}</td>
+      <td>${rec.wcP}/${rec.wcT}</td>
+      <td>${rec.dcP}/${rec.dcT}</td>
+      <td>${toINR(rec.wt)}</td>
+      <td>${toINR(rec.dt)}</td>
+      <td>${toINR(rec.penalties)}</td>
+      <td style="font-weight:900">${toINR(rec.grandNet)}</td>
+      <td>${fmtDateIST(new Date(rec.nextISO))}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+/* ===== WhatsApp (per group) ===== */
+function buildWhatsappReportForGroup(groupId, rec){
+  const g=getGroupById(groupId); if(!g) return "about:blank";
+  let r=rec;
+  if(!r){
+    const s=computeGroupSnapshot(g);
+    const nextISO = groupSchedule[g.id] ? new Date(groupSchedule[g.id]).toISOString()
+                                        : new Date(todayIST().getTime()+4*86400000).toISOString();
+    r={ groupId:g.id, groupName:g.name, paymentISO: todayIST().toISOString(), nextISO,
+        wcT:s.wcT,wcP:s.wcP,dcT:s.dcT,dcP:s.dcP, wt:s.wt,dt:s.dt, penalties:s.pen, grandNet:s.grand, roster:s.roster };
+  }
+  const L=[];
+  L.push(`📅 ${fmtDateIST(new Date(r.paymentISO))} — ${r.groupName} — 4th Day Fooding Report`);
+  L.push("");
+  L.push("📌 Reminder: 📝 Material report has been submitted successfully ✅");
+  L.push("");
+  L.push(`👥 Members: ${r.roster.length}`);
+  L.push(`👷 Workers (Base): ${toINR(r.wt)}`);
+  L.push(`🚚 Drivers (Base): ${toINR(r.dt)}`);
+  L.push(`⚡ Penalties: ${toINR(r.penalties)}`);
+  L.push(`💵 Grand Total (Net): ${toINR(r.grandNet)}`);
+  L.push("");
+  L.push(`⏭️ Next ${r.groupName} Payment: ${fmtDateIST(new Date(r.nextISO))}`);
+  L.push("");
+  L.push("— Attendance, Penalties & Payments —");
+  r.roster.slice().sort((a,b)=> (a.role===b.role?a.name.localeCompare(b.name):a.role.localeCompare(b.role))).forEach(it=>{
+    const role=it.role==="worker"?"W":"D";
+    const stat=it.status==="present"?"Present":"Absent";
+    const pen=it.penalty>0?` | Penalty ${toINR(it.penalty)}${it.penaltyReason?` (Reason: ${it.penaltyReason})`:""}`:"";
+    const paid=it.paid?`Paid ${toINR(it.netPaid)}`:"Not Paid";
+    L.push(`${role}: ${it.name} — ${stat}${pen} — ${paid}`);
+  });
+  const msg=L.join("\n");
+  return "https://wa.me/"+encodeURIComponent(PHONE_ADMIN.replace(/[^\d+]/g,''))+"?text="+encodeURIComponent(msg);
+}
+
+/* ===== WhatsApp (aggregate preview) ===== */
+function openAggregateWhatsapp(){
+  const agg=computeAggregateToday();
+  if(!agg.per.length){ alert("No groups due today."); return; }
+  const T=[];
+  const today=fmtDateIST(todayIST());
+  T.push(`📅 ${today} — 4th Day Fooding — DUE GROUPS SUMMARY`);
+  T.push("");
+  T.push(`🧩 Groups Due Today: ${agg.per.map(x=>x.group.name).join(", ")}`);
+  T.push("");
+  T.push(`👷 Workers (Base): ${toINR(agg.sumW)}`);
+  T.push(`🚚 Drivers (Base): ${toINR(agg.sumD)}`);
+  T.push(`⚡ Penalties: ${toINR(agg.sumPen)}`);
+  T.push(`💵 Grand Total (Net): ${toINR(agg.sumNet)}`);
+  T.push("");
+  T.push("— Per-Group —");
+  agg.per.forEach(({group: g, snap: s})=>{
+    T.push(`${g.name}: Net ${toINR(s.grand)} | W ${toINR(s.wt)} | D ${toINR(s.dt)} | Pen ${toINR(s.pen)} | W P/T ${s.wcP}/${s.wcT} | D P/T ${s.dcP}/${s.dcT}`);
+  });
+  T.push("");
+  T.push("📌 Reminder: 📝 Material report has been submitted successfully ✅");
+
+  const msg=T.join("\n");
+  // Fallback: if too long, open per-group tabs instead
+  if(encodeURIComponent(msg).length > 1500){
+    agg.per.forEach(({group})=>{
+      const url = buildWhatsappReportForGroup(group.id, null);
+      window.open(url,"_blank");
+    });
+  }else{
+    const url = "https://wa.me/"+encodeURIComponent(PHONE_ADMIN.replace(/[^\d+]/g,''))+"?text="+encodeURIComponent(msg);
+    window.open(url,"_blank");
+  }
+}
+
+/* ===== Payment flow (per group) ===== */
+let pendingPayGroupId=null;
+function handlePayClick(groupId){ pendingPayGroupId=groupId; openReminder(); }
+$("#cancelReminderBtn").onclick = ()=>{ pendingPayGroupId=null; closeReminder(); };
+$("#confirmReminderBtn").onclick = ()=>{
+  closeReminder();
+  if(pendingPayGroupId) processGroupPayment(pendingPayGroupId);
+  pendingPayGroupId=null;
+};
+function processGroupPayment(groupId){
+  const g=getGroupById(groupId); if(!g){ alert("Group not found"); return; }
+  const now=todayIST(), next=new Date(now.getTime()+4*86400000);
+  const s=computeGroupSnapshot(g);
+  const rec={groupId:g.id, groupName:g.name, paymentISO:now.toISOString(), nextISO:next.toISOString(),
+             wcT:s.wcT,wcP:s.wcP,dcT:s.dcT,dcP:s.dcP, wt:s.wt,dt:s.dt, penalties:s.pen, grandNet:s.grand, roster:s.roster};
+  groupHistory.push(rec); saveHistory();
+  groupSchedule[g.id]=next.toISOString(); saveSchedule();
+  penalties[g.id]={}; savePenalties();
+  cleanupHistory();
+  renderEverything();
+  window.open(buildWhatsappReportForGroup(g.id,rec), "_blank");
+  toast(`✅ ${g.name} paid. Next: ${fmtDateIST(next)}`);
+}
+
+/* ===== Pay All Due Today (sequential, modal each group) ===== */
+$("#payAllBtn").onclick = async ()=>{
+  const due = groupsDueToday();
+  if(!due.length){ alert("No groups due today."); return; }
+  for(const g of due){
+    await new Promise(resolve=>{
+      // sequence: open modal, on confirm process; on cancel skip
+      pendingPayGroupId = g.id;
+      openReminder();
+      const onCancel = ()=>{ $("#cancelReminderBtn").onclick=null; $("#confirmReminderBtn").onclick=null; closeReminder(); resolve(); };
+      const onConfirm= ()=>{ $("#cancelReminderBtn").onclick=null; $("#confirmReminderBtn").onclick=null; closeReminder(); processGroupPayment(g.id); resolve(); };
+      $("#cancelReminderBtn").onclick = onCancel;
+      $("#confirmReminderBtn").onclick = onConfirm;
+    });
+  }
+};
+$("#previewAllBtn").onclick = openAggregateWhatsapp;
+
+/* ===== Reminder modal ===== */
+function openReminder(){ $("#backdrop").style.display="flex"; }
+function closeReminder(){ $("#backdrop").style.display="none"; }
+
+/* ===== Toast ===== */
+function toast(msg){
+  const t=document.createElement("div");
+  t.textContent=msg;
+  t.style.cssText="position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#0b1220;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:var(--shadow-md);font-weight:800;font-size:12px;z-index:1200;opacity:.98";
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.style.transition="opacity .4s ease, transform .4s ease"; t.style.opacity="0"; t.style.transform="translateX(-50%) translateY(6px)"; }, 1200);
+  setTimeout(()=> t.remove(), 1700);
+}
+
+/* ===== Render everything ===== */
+function renderEverything(){
+  renderGroups();
+  renderTodayPanel();
+  renderHistory();
+}
+
+/* ===== Init ===== */
+(function init(){
+  if(!groups.length) ensureGroups(6);
+  renderEverything();
+  addForm.style.display="none";
+})();
+</script>
+</body>
+</html>
