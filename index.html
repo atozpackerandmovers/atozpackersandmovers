@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A to Z Packers & Movers — Live Tracking</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --brand:#0d47a1; --brand-2:#174bbc; --ok:#1b5e20; --warn:#b71c1c; --bg:#f7f8fb;
+      --card:#ffffff; --text:#0f172a; --muted:#64748b; --chip:#eef2ff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 "Inter",system-ui,-apple-system,Segoe UI,Roboto}
+    .container{max-width:960px;margin:0 auto;padding:16px}
+    header{background:var(--brand);color:#fff;padding:18px 0;margin-bottom:16px}
+    h1{margin:0;text-align:center;font-size:20px}
+    .row{display:grid;gap:16px}
+    @media(min-width:880px){.row{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);border-radius:14px;box-shadow:0 8px 28px rgba(2,6,23,.08);padding:18px}
+    .title{display:flex;gap:10px;align-items:center;font-weight:700;margin:0 0 12px 0}
+    .muted{color:var(--muted);font-size:13px}
+    label{font-weight:600;font-size:13px;margin:8px 0 6px;display:block}
+    input,select,textarea{
+      width:100%;padding:13px 14px;border:1px solid #dbe1ea;border-radius:12px;background:#fff;font:inherit
+    }
+    input[disabled],select[disabled]{background:#f1f5f9;color:#94a3b8}
+    .btn{width:100%;padding:13px 16px;border:0;border-radius:12px;color:#fff;font-weight:700;cursor:pointer}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+    .btn.primary{background:var(--brand-2)}
+    .btn.ok{background:var(--ok)}
+    .btn.warn{background:var(--warn)}
+    .stack{display:grid;gap:10px}
+    .flex{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px}
+    .grid2{display:grid;gap:10px}
+    @media(min-width:640px){.grid2{grid-template-columns:1fr 1fr}}
+    .timeline{border-left:3px solid #e2e8f0;margin-left:8px;padding-left:14px}
+    .timeitem{margin:10px 0}
+    .timeitem .dot{width:10px;height:10px;background:var(--brand-2);border-radius:50%;position:relative;left:-20px;top:16px}
+    .bar{display:flex;justify-content:space-between;align-items:center}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;background:#111827;color:#fff;border-radius:10px;padding:10px;font-size:12px;overflow:auto}
+    .hide{display:none}
+    .footer{margin:24px 0;color:var(--muted);font-size:12px;text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>🚚 A to Z Packers & Movers — Live Tracking</h1>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ADMIN LOGIN -->
+    <div class="card" id="loginCard">
+      <h2 class="title">🔑 Admin Login</h2>
+      <div class="grid2">
+        <div>
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="admin@example.com" value="manojgatibbi506@gmail.com" />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input id="password" type="password" placeholder="Your password" />
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <button class="btn ok" id="btnSignIn">Sign In</button>
+        <button class="btn warn" id="btnSignOut">Sign Out</button>
+      </div>
+      <div class="muted" id="authState">Not signed in</div>
+    </div>
+
+    <!-- ADMIN PANEL (hidden until signed in) -->
+    <div class="card hide" id="adminPanel">
+      <h2 class="title">🧰 Admin Panel</h2>
+
+      <!-- Create order -->
+      <h3 style="margin:6px 0 8px">Create new order</h3>
+      <div class="grid2">
+        <div>
+          <label for="custName">Customer Name</label>
+          <input id="custName" placeholder="Full name">
+        </div>
+        <div>
+          <label for="custContact">Contact</label>
+          <input id="custContact" placeholder="+91 98xxxxxxx">
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label for="fromCity">From (pickup city)</label>
+          <input id="fromCity" placeholder="Bhubaneswar">
+        </div>
+        <div>
+          <label for="toCity">To (destination)</label>
+          <input id="toCity" placeholder="Lucknow">
+        </div>
+      </div>
+      <div class="grid2">
+        <div>
+          <label>Tracking ID (auto)</label>
+          <div class="kbd" id="autoTid"></div>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn primary" id="btnCreate">Save New Entry (Booked)</button>
+        </div>
+      </div>
+      <div class="muted">First status will be <span class="pill">Booked</span> with current time.</div>
+
+      <hr style="margin:18px 0;border:none;border-top:1px dashed #e2e8f0">
+
+      <!-- Quick status -->
+      <h3 style="margin:6px 0 8px">Quick Status Update</h3>
+      <div class="grid2">
+        <div>
+          <label for="updTid">Tracking ID</label>
+          <input id="updTid" placeholder="Enter existing Tracking ID">
+        </div>
+        <div>
+          <label for="updStatus">Status</label>
+          <select id="updStatus">
+            <option>Booked</option>
+            <option>Picked Up</option>
+            <option>Transit</option>
+            <option>Destination In</option>
+            <option>Destination Out</option>
+            <option>Out for Delivery</option>
+            <option>Delivered</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <button class="btn ok" id="btnAddStatus">Add Status (now)</button>
+        <div class="muted" id="adminHint"></div>
+      </div>
+    </div>
+
+    <!-- PUBLIC TRACKING -->
+    <div class="card">
+      <h2 class="title">📦 Track Your Shipment</h2>
+      <div class="grid2">
+        <div>
+          <label for="trackInput">Enter Tracking ID</label>
+          <input id="trackInput" placeholder="AZ250821-8226">
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn ok" id="btnTrack">Track Now</button>
+        </div>
+      </div>
+
+      <div id="result" class="hide" style="margin-top:14px">
+        <div class="bar">
+          <div>
+            <div style="font-weight:700" id="rName">—</div>
+            <div class="muted" id="rContact">—</div>
+          </div>
+          <div class="pill" id="rTid">—</div>
+        </div>
+        <div class="muted" style="margin-top:6px" id="rRoute">—</div>
+
+        <div class="timeline" id="rTimeline" style="margin-top:10px"></div>
+      </div>
+
+      <div id="noResult" class="muted hide" style="margin-top:10px">No order found for that Tracking ID.</div>
+    </div>
+
+    <div class="footer">© A to Z Packers & Movers • Firestore Live Tracking</div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, updateDoc, getDoc, Timestamp, arrayUnion
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    // ====== YOUR PROJECT CONFIG (from Firebase console) ======
+    const firebaseConfig = {
+      apiKey: "AIzaSyAOCeCbqVvki8LN0LLQFNkLOwEoYer3EKQ",
+      authDomain: "a-to-z-packers-tracking-live.firebaseapp.com",
+      projectId: "a-to-z-packers-tracking-live",
+      storageBucket: "a-to-z-packers-tracking-live.firebasestorage.app",
+      messagingSenderId: "719198128823",
+      appId: "1:719198128823:web:d7ef4235dda458ff375b32",
+      measurementId: "G-B4KR2RETYR"
+    };
+
+    // ====== INIT ======
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    // ====== UI helpers ======
+    const $ = (id)=>document.getElementById(id);
+    const loginCard   = $("loginCard");
+    const adminPanel  = $("adminPanel");
+    const authState   = $("authState");
+    const adminHint   = $("adminHint");
+
+    function toast(msg){ alert(msg); }
+    function formatTS(ts){
+      if(!ts) return "";
+      const d = ts.toDate();
+      return d.toLocaleString();
+    }
+    function makeTrackingId(){
+      const now = new Date();
+      const p = new Intl.DateTimeFormat('en-IN',{day:'2-digit',month:'2-digit',year:'2-digit'}).format(now).replace(/\//g,'');
+      const rnd = Math.floor(1000+Math.random()*9000);
+      return `AZ${p}-${rnd}`;
+    }
+
+    // show auto TrackingID for new order
+    const nextTid = makeTrackingId();
+    $("autoTid").textContent = nextTid;
+    $("updTid").value = nextTid; // convenience for quick test
+
+    // ====== AUTH ======
+    $("btnSignIn").onclick = async ()=>{
+      try{
+        const email = $("email").value.trim();
+        const pass  = $("password").value;
+        await signInWithEmailAndPassword(auth,email,pass);
+        toast("Signed in successfully!");
+      }catch(err){ toast("Sign in failed: "+err.message); }
+    };
+    $("btnSignOut").onclick = async ()=>{
+      try{ await signOut(auth); toast("Signed out."); }catch(err){ toast(err.message); }
+    };
+
+    onAuthStateChanged(auth,(user)=>{
+      if(user){
+        authState.textContent = "Signed in as "+(user.email||"");
+        adminPanel.classList.remove("hide");
+      }else{
+        authState.textContent = "Not signed in";
+        adminPanel.classList.add("hide");
+      }
+    });
+
+    // ====== CREATE ORDER ======
+    $("btnCreate").onclick = async ()=>{
+      const user = auth.currentUser;
+      if(!user){ toast("Please sign in first."); return; }
+
+      const name = $("custName").value.trim();
+      const contact = $("custContact").value.trim();
+      const from = $("fromCity").value.trim();
+      const to   = $("toCity").value.trim();
+      const tid  = $("autoTid").textContent.trim();
+
+      if(!name || !contact || !from || !to){ toast("Please fill all order fields."); return; }
+
+      try{
+        const docRef = doc(db,"Orders",tid);
+        await setDoc(docRef,{
+          Name: name,
+          Contact: contact,
+          From: from,
+          To: to,
+          CreatedAt: Timestamp.now(),
+          Status: [
+            { Text: "Booked", Ts: Timestamp.now() }
+          ]
+        });
+        $("updTid").value = tid;
+        toast("Order saved with Tracking ID: "+tid);
+      }catch(err){
+        toast("Save failed: "+err.message);
+      }
+    };
+
+    // ====== ADD STATUS ======
+    $("btnAddStatus").onclick = async ()=>{
+      const user = auth.currentUser;
+      if(!user){ toast("Please sign in first."); return; }
+
+      const tid = $("updTid").value.trim();
+      const text = $("updStatus").value;
+      if(!tid){ toast("Enter Tracking ID."); return; }
+
+      try{
+        const docRef = doc(db,"Orders",tid);
+        const snap = await getDoc(docRef);
+        if(!snap.exists()){ toast("No such order."); return; }
+
+        // Append a map {Text, Ts} using client timestamp (no serverTimestamp inside arrays)
+        await updateDoc(docRef,{
+          Status: arrayUnion({ Text: text, Ts: Timestamp.now() })
+        });
+        adminHint.textContent = `Added "${text}" at ${new Date().toLocaleString()}`;
+        toast("Status added.");
+      }catch(err){
+        toast("Update failed: "+err.message);
+      }
+    };
+
+    // ====== PUBLIC TRACK ======
+    $("btnTrack").onclick = async ()=>{
+      const tid = $("trackInput").value.trim();
+      if(!tid){ toast("Enter Tracking ID."); return; }
+
+      try{
+        const snap = await getDoc(doc(db,"Orders",tid));
+        if(!snap.exists()){
+          $("result").classList.add("hide");
+          $("noResult").classList.remove("hide");
+          return;
+        }
+        $("noResult").classList.add("hide");
+        $("result").classList.remove("hide");
+
+        const d = snap.data();
+        $("rName").textContent = d.Name || "-";
+        $("rContact").textContent = d.Contact || "-";
+        $("rTid").textContent = tid;
+        $("rRoute").textContent = `${d.From || "-"} → ${d.To || "-"}`;
+
+        // Timeline
+        const tl = $("rTimeline");
+        tl.innerHTML = "";
+        const items = (d.Status||[]).sort((a,b)=>{
+          const ta=a.Ts?.seconds||0, tb=b.Ts?.seconds||0;
+          return ta-tb;
+        });
+        items.forEach(i=>{
+          const div = document.createElement("div");
+          div.className = "timeitem";
+          div.innerHTML = `
+            <div class="dot"></div>
+            <div style="font-weight:600">${i.Text||"-"}</div>
+            <div class="muted">${formatTS(i.Ts)}</div>
+          `;
+          tl.appendChild(div);
+        });
+      }catch(err){
+        toast("Load failed: "+err.message);
+      }
+    };
+
+  </script>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAOCeCbqVvki8LN0LLQFNkLOwEoYer3EKQ",
+    authDomain: "a-to-z-packers-tracking-live.firebaseapp.com",
+    projectId: "a-to-z-packers-tracking-live",
+    storageBucket: "a-to-z-packers-tracking-live.firebasestorage.app",
+    messagingSenderId: "719198128823",
+    appId: "1:719198128823:web:d7ef4235dda458ff375b32",
+    measurementId: "G-B4KR2RETYR"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>
