@@ -1,87 +1,121 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>A to Z Packers and Movers</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A to Z Packers & Movers – Live Tracking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    header {
+      background: #2c3e50;
+      color: white;
+      padding: 15px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .container {
+      margin: 20px auto;
+      max-width: 400px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #219150;
+    }
+    .btn-secondary {
+      background: #e74c3c;
+    }
+    .btn-secondary:hover {
+      background: #c0392b;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
+  <header>🚚 A to Z Packers & Movers – Live Tracking</header>
 
-  <!-- Navigation -->
-  <nav class="bg-white shadow p-4 flex flex-wrap justify-between items-center">
-    <h1 class="text-xl font-bold text-red-600">A to Z Packers & Movers</h1>
-    <div class="space-x-3 text-sm font-medium">
-      <a href="index.html" class="text-gray-700 hover:text-red-600">Home</a>
-      <a href="contact.html" class="text-gray-700 hover:text-red-600">Contact</a>
-      <a href="track.html" class="text-gray-700 hover:text-red-600">Track Order</a>
-      <a href="gallery.html" class="text-gray-700 hover:text-red-600">Gallery</a>
-      <a href="review.html" class="text-gray-700 hover:text-red-600">Reviews</a>
-      <a href="faq.html" class="text-gray-700 hover:text-red-600">FAQ</a>
-      <a href="enquiry.html" class="text-gray-700 hover:text-red-600">Enquiry</a>
-      <a href="admin-dashboard.html" class="text-gray-700 hover:text-red-600">Admin</a>
-    </div>
-  </nav>
+  <div class="container">
+    <h3>🔑 Admin Login</h3>
+    <input type="email" id="aEmail" placeholder="Enter email">
+    <input type="password" id="aPassword" placeholder="Enter password">
+    <button id="btnSignIn">Sign In</button>
+    <button id="btnSignOut" class="btn-secondary">Sign Out</button>
+  </div>
 
-  <!-- Header -->
-  <header class="bg-red-600 text-white p-4 text-center">
-    <h2 class="text-3xl font-bold">A to Z Packers and Movers</h2>
-    <p class="text-sm">Trusted Household, Office & Car Relocation Services in Odisha</p>
-  </header>
+  <div class="container">
+    <h3>📦 Track Your Shipment</h3>
+    <input type="text" id="trackingId" placeholder="Enter Tracking ID">
+    <button id="btnTrack">Track Now</button>
+    <div id="trackingResult"></div>
+  </div>
 
-  <!-- Hero Section -->
-  <section class="p-6 text-center bg-white">
-    <h2 class="text-2xl font-semibold mb-4">We Move Everything, With Care!</h2>
-    <p class="mb-6">From Cuttack to Anywhere in India – Call Us Now: <strong>+91-9338888550</strong></p>
-    <div class="flex justify-center gap-4 flex-wrap">
-      <a href="https://wa.me/919338888550" target="_blank" class="bg-green-500 text-white px-5 py-2 rounded hover:bg-green-600">
-        <i class="fab fa-whatsapp"></i> Chat on WhatsApp
-      </a>
-      <a href="#services" class="bg-yellow-400 text-black px-5 py-2 rounded hover:bg-yellow-300">
-        View Our Services
-      </a>
-    </div>
-  </section>
+  <!-- ✅ Firebase + Auth Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  <!-- Services Section -->
-  <section id="services" class="p-6 bg-gray-100">
-    <h3 class="text-center text-xl font-bold mb-6">Our Core Services</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-      <div class="bg-white p-4 shadow rounded">
-        <i class="fas fa-home text-3xl text-red-500 mb-2"></i>
-        <h4 class="font-semibold mb-1">Household Shifting</h4>
-        <p class="text-sm">Safe & secure home relocations across Odisha and India.</p>
-      </div>
-      <div class="bg-white p-4 shadow rounded">
-        <i class="fas fa-car text-3xl text-blue-500 mb-2"></i>
-        <h4 class="font-semibold mb-1">Car Transportation</h4>
-        <p class="text-sm">Covered containers for all types of vehicles.</p>
-      </div>
-      <div class="bg-white p-4 shadow rounded">
-        <i class="fas fa-building text-3xl text-yellow-500 mb-2"></i>
-        <h4 class="font-semibold mb-1">Office Relocation</h4>
-        <p class="text-sm">Complete packing, loading & unloading for businesses.</p>
-      </div>
-      <div class="bg-white p-4 shadow rounded">
-        <i class="fas fa-box text-3xl text-green-500 mb-2"></i>
-        <h4 class="font-semibold mb-1">Packing Services</h4>
-        <p class="text-sm">Cartons, bubble wrap, stretch films and more.</p>
-      </div>
-    </div>
-  </section>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAOCeCbqVvki8LN0LLQFNkLOwEoYer3EKQ",
+      authDomain: "a-to-z-packers-tracking-live.firebaseapp.com",
+      projectId: "a-to-z-packers-tracking-live",
+      storageBucket: "a-to-z-packers-tracking-live.firebasestorage.app",
+      messagingSenderId: "719198128823",
+      appId: "1:719198128823:web:d7ef4235dda458ff375b32",
+      measurementId: "G-B4KR2RETYR"
+    };
 
-  <!-- Footer -->
-  <footer class="bg-red-600 text-white text-center p-4 mt-10">
-    <p>&copy; 2025 A to Z Packers and Movers, Deulasahi, Tulsipur, Cuttack</p>
-    <p>Developed with ❤️ by Qamar</p>
-  </footer>
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-  <!-- Floating Call Button -->
-  <a href="tel:+919338888550" class="fixed bottom-4 right-4 bg-green-600 text-white text-xl p-4 rounded-full shadow-lg hover:bg-green-700 z-50" title="Call Now">
-    📞
-  </a>
+    // Sign In
+    document.getElementById("btnSignIn").addEventListener("click", async () => {
+      const email = document.getElementById("aEmail").value;
+      const password = document.getElementById("aPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert("✅ Signed in successfully!");
+      } catch (error) {
+        alert("❌ Error: " + error.message);
+      }
+    });
 
+    // Sign Out
+    document.getElementById("btnSignOut").addEventListener("click", async () => {
+      await signOut(auth);
+      alert("👋 Signed out");
+    });
+
+    // Track Button Demo
+    document.getElementById("btnTrack").addEventListener("click", () => {
+      const trackId = document.getElementById("trackingId").value;
+      if(trackId.trim() === "") {
+        document.getElementById("trackingResult").innerText = "⚠️ Please enter a valid Tracking ID.";
+      } else {
+        document.getElementById("trackingResult").innerText = "📍 Current status for ID " + trackId + ": In Transit 🚚";
+      }
+    });
+  </script>
 </body>
 </html>
