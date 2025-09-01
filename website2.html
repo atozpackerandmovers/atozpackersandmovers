@@ -1,0 +1,2146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A to Z Packers & Movers - Professional Moving Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase v9 SDK - Properly Configured -->
+    <!-- ✅ Firebase v12 — App + Firestore + Auth -->
+<script type="module">
+  // 1) Import (v12)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc, getDoc, getDocs, query, orderBy, where, onSnapshot, serverTimestamp } 
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } 
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+  // 2) आपकी Firebase Configuration (नई)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDAXkTAGbXYIizm3FIj7vkzNk7vvYa7EnU",
+    authDomain: "a-to-z-packers-website.firebaseapp.com",
+    projectId: "a-to-z-packers-website",
+    storageBucket: "a-to-z-packers-website.firebasestorage.app",
+    messagingSenderId: "18342273109",
+    appId: "1:18342273109:web:e25235fae9c5b3ef3674dc"
+  };
+
+  // 3) Firebase initialize करना
+  const app  = initializeApp(firebaseConfig);
+  const db   = getFirestore(app);
+  const auth = getAuth(app);
+
+  // 4) Global variables (ताकि बाकी कोड चलता रहे)
+  window.firebaseApp  = app;
+  window.firebaseDb   = db;
+  window.firebaseAuth = auth;
+  window.firebaseModules = {
+    collection, doc, setDoc, getDoc, getDocs, query, orderBy, where, onSnapshot, serverTimestamp,
+    signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword
+  };
+
+  console.log('✅ Firebase v12 initialized successfully');
+</script>
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .animate-fade-in { animation: fadeInUp 0.8s ease-out; }
+        @keyframes fadeInUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .status-enquiry { @apply bg-gray-100 text-gray-800; }
+        .status-quotation-sent { @apply bg-blue-100 text-blue-800; }
+        .status-confirmed { @apply bg-green-100 text-green-800; }
+        .status-packed { @apply bg-yellow-100 text-yellow-800; }
+        .status-in-transit { @apply bg-purple-100 text-purple-800; }
+        .status-out-for-delivery { @apply bg-orange-100 text-orange-800; }
+        .status-delivered { @apply bg-emerald-100 text-emerald-800; }
+        .status-on-hold { @apply bg-red-100 text-red-800; }
+        .status-cancelled { @apply bg-gray-100 text-gray-600; }
+        
+        .loading-spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tracking-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+        }
+
+        .calculator-section {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 60px 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            pointer-events: auto;
+            display: inline-block;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6 !important;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            color: #3b82f6 !important;
+            font-weight: 600;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 50%;
+            background-color: #3b82f6;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+            left: 0;
+        }
+
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            touch-action: manipulation;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-menu.active {
+            max-height: 500px;
+        }
+
+        .mobile-menu .nav-link {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+            user-select: none;
+        }
+
+        .mobile-menu .nav-link:active {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .calculator-result {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Add scroll margin to sections for proper navigation */
+        section {
+            scroll-margin-top: 80px;
+        }
+
+        /* Enhanced button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Service card hover effects */
+        .service-card {
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Testimonial cards */
+        .testimonial-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            transition: all 0.3s ease;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Progress bar for tracking */
+        .progress-bar {
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+            height: 4px;
+            border-radius: 2px;
+            animation: progress 2s ease-in-out;
+        }
+
+        @keyframes progress {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+
+        /* Floating animation for hero elements */
+        .float-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Pulse animation for important elements */
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Main Navigation -->
+            <div class="flex justify-between items-center py-2">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-gray-900">🚚 A to Z Packers & Movers</h1>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        🏠 Homepage
+                    </a>
+                    <a href="#about" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        ℹ️ About Us
+                    </a>
+                    <a href="#services" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        🛠️ Services
+                    </a>
+                    <a href="#tracking" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        📦 Tracking
+                    </a>
+                    <a href="#calculator" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        🧮 Calculator
+                    </a>
+                    <a href="#customers" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        😊 Happy Customers
+                    </a>
+                    <a href="#videos" class="nav-link text-gray-700 hover:text-blue-600 font-medium transition-colors">
+                        🎥 Videos
+                    </a>
+                    <button id="adminPanelBtn" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                        🔐 My Admin Panel
+                    </button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                    <svg id="menuIcon" class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                    <svg id="closeIcon" class="w-6 h-6 text-gray-600 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile Navigation Menu -->
+            <div id="mobileMenu" class="lg:hidden mobile-menu bg-white border-t border-gray-200 py-4">
+                <div class="space-y-2">
+                    <a href="#home" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        🏠 Homepage
+                    </a>
+                    <a href="#about" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        ℹ️ About Us
+                    </a>
+                    <a href="#services" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        🛠️ Services
+                    </a>
+                    <a href="#tracking" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        📦 Tracking
+                    </a>
+                    <a href="#calculator" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        🧮 Calculator
+                    </a>
+                    <a href="#customers" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        😊 Happy Customers
+                    </a>
+                    <a href="#videos" class="mobile-nav-link block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 font-medium transition-colors rounded-lg mx-2">
+                        🎥 Videos
+                    </a>
+                    <div class="px-2 pt-2">
+                        <button id="mobileAdminBtn" class="w-full bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                            🔐 My Admin Panel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 text-white py-20 overflow-hidden">
+            <div class="absolute inset-0 bg-black opacity-20"></div>
+            <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Hero Content -->
+                    <div class="text-center lg:text-left animate-fade-in">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                            🚚 Professional <span class="text-yellow-300">Packers & Movers</span> Services
+                        </h1>
+                        <p class="text-xl md:text-2xl mb-8 opacity-90 leading-relaxed">
+                            Safe, reliable, and affordable moving solutions across India. Your trusted partner for hassle-free relocations.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                            <button onclick="scrollToSection('contact')" class="btn-primary bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg transition-all hover:scale-105 shadow-lg">
+                                📞 Get Free Quote
+                            </button>
+                            <button onclick="scrollToSection('tracking')" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-blue-600 transition-all">
+                                📦 Track Shipment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section id="about" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">About A to Z Packers & Movers</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">With over 10 years of experience, we are India's most trusted packing and moving company, providing seamless relocation services across the country.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center p-6 service-card bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                        <div class="text-4xl mb-4">🏆</div>
+                        <h3 class="text-xl font-semibold mb-2">10+ Years Experience</h3>
+                        <p class="text-gray-600">Decade of excellence in moving services with thousands of successful relocations</p>
+                    </div>
+                    <div class="text-center p-6 service-card bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+                        <div class="text-4xl mb-4">🚚</div>
+                        <h3 class="text-xl font-semibold mb-2">5000+ Happy Moves</h3>
+                        <p class="text-gray-600">Successfully completed relocations with 99.9% customer satisfaction rate</p>
+                    </div>
+                    <div class="text-center p-6 service-card bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                        <div class="text-4xl mb-4">🌍</div>
+                        <h3 class="text-xl font-semibold mb-2">Pan India Service</h3>
+                        <p class="text-gray-600">Coverage across all major cities with dedicated local teams</p>
+                    </div>
+                </div>
+
+                <!-- Why Choose Us -->
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold text-center mb-12">Why Choose A to Z Packers & Movers?</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="text-center p-4">
+                            <div class="text-3xl mb-3">🛡️</div>
+                            <h4 class="font-semibold mb-2">100% Safe</h4>
+                            <p class="text-sm text-gray-600">Complete insurance coverage</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="text-3xl mb-3">⚡</div>
+                            <h4 class="font-semibold mb-2">Fast Service</h4>
+                            <p class="text-sm text-gray-600">Quick and efficient moving</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="text-3xl mb-3">💰</div>
+                            <h4 class="font-semibold mb-2">Best Prices</h4>
+                            <p class="text-sm text-gray-600">Competitive and transparent pricing</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <div class="text-3xl mb-3">🎯</div>
+                            <h4 class="font-semibold mb-2">Professional</h4>
+                            <p class="text-sm text-gray-600">Trained and experienced team</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-20 bg-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Services</h2>
+                    <p class="text-xl text-gray-600">Complete moving solutions for all your needs</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="service-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all overflow-hidden">
+                        <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
+                            <img src="https://i.postimg.cc/hPkKpB7r/file-00000000c03c61f8aa6a8884e39ca41d-1.png" 
+                                 alt="Professional home relocation services - Saksham's moving and packing team" 
+                                 class="w-full h-full object-cover"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="absolute inset-0 bg-blue-600 bg-opacity-20 flex items-center justify-center text-6xl text-white" style="display: none;">🏠</div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-semibold mb-3 text-center">Home Relocation</h3>
+                            <p class="text-gray-600 text-center mb-4">Complete household shifting with professional packing and safe transportation</p>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>✓ Professional packing materials</li>
+                                <li>✓ Furniture disassembly & assembly</li>
+                                <li>✓ Safe loading & unloading</li>
+                                <li>✓ Insurance coverage included</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6">
+                        <div class="text-4xl mb-4 text-center">🏢</div>
+                        <h3 class="text-xl font-semibold mb-3 text-center">Office Moving</h3>
+                        <p class="text-gray-600 text-center mb-4">Corporate relocation with minimal downtime and maximum efficiency</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>✓ IT equipment handling</li>
+                            <li>✓ Weekend & after-hours service</li>
+                            <li>✓ Minimal business disruption</li>
+                            <li>✓ Specialized office packing</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6">
+                        <div class="text-4xl mb-4 text-center">🚚</div>
+                        <h3 class="text-xl font-semibold mb-3 text-center">Transportation</h3>
+                        <p class="text-gray-600 text-center mb-4">Safe and secure goods transportation with real-time tracking</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>✓ GPS enabled vehicles</li>
+                            <li>✓ Real-time tracking</li>
+                            <li>✓ Multiple vehicle sizes</li>
+                            <li>✓ Experienced drivers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6">
+                        <div class="text-4xl mb-4 text-center">📦</div>
+                        <h3 class="text-xl font-semibold mb-3 text-center">Packing Services</h3>
+                        <p class="text-gray-600 text-center mb-4">Professional packing with quality materials and expert techniques</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>✓ High-quality packing materials</li>
+                            <li>✓ Fragile item protection</li>
+                            <li>✓ Custom crating services</li>
+                            <li>✓ Inventory management</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6">
+                        <div class="text-4xl mb-4 text-center">🏪</div>
+                        <h3 class="text-xl font-semibold mb-3 text-center">Warehousing</h3>
+                        <p class="text-gray-600 text-center mb-4">Secure storage solutions for short and long-term requirements</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>✓ Climate controlled storage</li>
+                            <li>✓ 24/7 security monitoring</li>
+                            <li>✓ Flexible storage periods</li>
+                            <li>✓ Easy access & retrieval</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all p-6">
+                        <div class="text-4xl mb-4 text-center">🛡️</div>
+                        <h3 class="text-xl font-semibold mb-3 text-center">Insurance</h3>
+                        <p class="text-gray-600 text-center mb-4">Comprehensive insurance coverage for complete peace of mind</p>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>✓ Full value protection</li>
+                            <li>✓ Transit insurance</li>
+                            <li>✓ Quick claim processing</li>
+                            <li>✓ No hidden charges</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TRACKING SECTION -->
+        <section id="tracking" class="tracking-section">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">📦 Track Your Shipment</h2>
+                    <p class="text-xl opacity-90">Real-time tracking for complete peace of mind</p>
+                </div>
+
+                <!-- Tracking Widget -->
+                <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto">
+                    <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                        <input type="text" id="trackingInput" 
+                               placeholder="Enter 9-digit Tracking ID (e.g., 123456789)" 
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900">
+                        <button id="trackBtn" 
+                                class="btn-primary bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center whitespace-nowrap">
+                            <span id="trackBtnText">🔍 Track Now</span>
+                            <div id="trackSpinner" class="loading-spinner ml-2 hidden"></div>
+                        </button>
+                    </div>
+
+                    <!-- Sample Tracking IDs -->
+                    <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                        <p class="text-sm text-blue-800 mb-2"><strong>Try these sample tracking IDs:</strong></p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="document.getElementById('trackingInput').value='123456789'" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">123456789</button>
+                            <button onclick="document.getElementById('trackingInput').value='987654321'" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">987654321</button>
+                            <button onclick="document.getElementById('trackingInput').value='555666777'" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">555666777</button>
+                        </div>
+                    </div>
+
+                    <!-- Tracking Results -->
+                    <div id="trackingResults" class="hidden">
+                        <div id="trackingContent" class="space-y-6"></div>
+                    </div>
+
+                    <!-- Tracking Error -->
+                    <div id="trackingError" class="hidden text-center">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                            <h3 class="text-lg font-semibold text-red-800 mb-2">❌ Tracking ID Not Found</h3>
+                            <p class="text-red-600 mb-4">Please check your tracking ID and try again.</p>
+                            <button id="retryTrack" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                Try Again
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 text-center">
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <div class="text-3xl mb-3">📱</div>
+                        <h3 class="font-semibold mb-2">Real-time Updates</h3>
+                        <p class="text-sm opacity-90">Get instant notifications on your shipment status</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <div class="text-3xl mb-3">🔒</div>
+                        <h3 class="font-semibold mb-2">Secure Tracking</h3>
+                        <p class="text-sm opacity-90">Your tracking information is completely secure</p>
+                    </div>
+                    <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                        <div class="text-3xl mb-3">⚡</div>
+                        <h3 class="font-semibold mb-2">Instant Access</h3>
+                        <p class="text-sm opacity-90">Track from any device, anywhere, anytime</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CALCULATOR SECTION -->
+        <section id="calculator" class="calculator-section">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">🧮 Moving Cost Calculator</h2>
+                    <p class="text-xl opacity-90">Get instant estimate for your moving requirements</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-2xl p-8">
+                    <form id="calculatorForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">House Type *</label>
+                                <select id="houseType" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900">
+                                    <option value="">Select House Type</option>
+                                    <option value="1bhk">1 BHK Apartment</option>
+                                    <option value="2bhk">2 BHK Apartment</option>
+                                    <option value="3bhk">3 BHK Apartment</option>
+                                    <option value="4bhk">4 BHK Apartment</option>
+                                    <option value="villa">Villa/Independent House</option>
+                                    <option value="office">Office/Commercial</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Distance (KM) *</label>
+                                <input type="number" id="distance" required min="1" max="5000" placeholder="Enter distance in KM" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">From City *</label>
+                                <input type="text" id="fromCity" required placeholder="Enter source city" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">To City *</label>
+                                <input type="text" id="toCity" required placeholder="Enter destination city" 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Moving Date *</label>
+                                <input type="date" id="movingDate" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Additional Services</label>
+                                <select id="additionalServices" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900">
+                                    <option value="">Select Additional Services</option>
+                                    <option value="packing">Professional Packing (+₹3,000)</option>
+                                    <option value="insurance">Insurance Coverage (+₹1,500)</option>
+                                    <option value="storage">Temporary Storage (+₹2,000)</option>
+                                    <option value="unpacking">Unpacking Service (+₹2,500)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full btn-primary bg-green-600 text-white py-4 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg">
+                            💰 Calculate Moving Cost
+                        </button>
+                    </form>
+
+                    <!-- Calculator Results -->
+                    <div id="calculatorResults" class="hidden mt-8">
+                        <div class="calculator-result">
+                            <h3 class="text-2xl font-bold mb-4">📊 Your Moving Cost Estimate</h3>
+                            <div id="calculatorContent"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Popular Routes -->
+                <div class="mt-12 bg-white bg-opacity-10 rounded-xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-center">🔥 Popular Moving Routes</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div class="text-center">
+                            <p class="font-semibold">Delhi → Mumbai</p>
+                            <p class="opacity-90">Starting from ₹15,000</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold">Bangalore → Chennai</p>
+                            <p class="opacity-90">Starting from ₹8,000</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="font-semibold">Pune → Hyderabad</p>
+                            <p class="opacity-90">Starting from ₹12,000</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Happy Customers Section -->
+        <section id="customers" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">😊 Happy Customers</h2>
+                    <p class="text-xl text-gray-600">What our customers say about us</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="testimonial-card rounded-xl p-6 shadow-lg">
+                        <div class="text-yellow-400 text-xl mb-4">⭐⭐⭐⭐⭐</div>
+                        <p class="text-gray-600 mb-4 italic">"Excellent service! They handled our entire household move from Delhi to Mumbai with great care. Every item reached safely. Highly recommended!"</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-3">RK</div>
+                            <div>
+                                <div class="font-semibold">Rajesh Kumar</div>
+                                <div class="text-sm text-gray-500">Delhi → Mumbai</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card rounded-xl p-6 shadow-lg">
+                        <div class="text-yellow-400 text-xl mb-4">⭐⭐⭐⭐⭐</div>
+                        <p class="text-gray-600 mb-4 italic">"Professional team, on-time delivery, and reasonable pricing. Best packers and movers in the city! Will definitely use again."</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold mr-3">PS</div>
+                            <div>
+                                <div class="font-semibold">Priya Sharma</div>
+                                <div class="text-sm text-gray-500">Mumbai → Pune</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card rounded-xl p-6 shadow-lg">
+                        <div class="text-yellow-400 text-xl mb-4">⭐⭐⭐⭐⭐</div>
+                        <p class="text-gray-600 mb-4 italic">"Safe and secure transportation. Not a single item was damaged during our office relocation. Thank you A to Z Packers!"</p>
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">AP</div>
+                            <div>
+                                <div class="font-semibold">Amit Patel</div>
+                                <div class="text-sm text-gray-500">Bangalore → Chennai</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Stats -->
+                <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="p-4">
+                        <div class="text-3xl font-bold text-blue-600 mb-2">99.9%</div>
+                        <div class="text-sm text-gray-600">Customer Satisfaction</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-3xl font-bold text-green-600 mb-2">5000+</div>
+                        <div class="text-sm text-gray-600">Successful Moves</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-3xl font-bold text-purple-600 mb-2">24/7</div>
+                        <div class="text-sm text-gray-600">Customer Support</div>
+                    </div>
+                    <div class="p-4">
+                        <div class="text-3xl font-bold text-orange-600 mb-2">0%</div>
+                        <div class="text-sm text-gray-600">Damage Rate</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Videos Section -->
+        <section id="videos" class="py-20 bg-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">🎥 Our Work in Action</h2>
+                    <p class="text-xl text-gray-600">See how we handle your precious belongings</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="service-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-br from-blue-400 to-blue-600 h-48 flex items-center justify-center relative">
+                            <div class="text-6xl text-white opacity-80">🎬</div>
+                            <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                                <button class="bg-white bg-opacity-90 rounded-full p-4 hover:bg-opacity-100 transition-all">
+                                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 5v10l8-5-8-5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-semibold mb-2">Professional Packing Process</h3>
+                            <p class="text-gray-600 text-sm mb-3">Watch our expert team pack your items with care and precision</p>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <span>👁️ 2.5K views</span>
+                                <span class="mx-2">•</span>
+                                <span>⏱️ 3:45</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-br from-green-400 to-green-600 h-48 flex items-center justify-center relative">
+                            <div class="text-6xl text-white opacity-80">🎬</div>
+                            <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                                <button class="bg-white bg-opacity-90 rounded-full p-4 hover:bg-opacity-100 transition-all">
+                                    <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 5v10l8-5-8-5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-semibold mb-2">Safe Loading & Transportation</h3>
+                            <p class="text-gray-600 text-sm mb-3">See how we ensure safe transportation of your goods</p>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <span>👁️ 1.8K views</span>
+                                <span class="mx-2">•</span>
+                                <span>⏱️ 5:20</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="service-card bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-br from-purple-400 to-purple-600 h-48 flex items-center justify-center relative">
+                            <div class="text-6xl text-white opacity-80">🎬</div>
+                            <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
+                                <button class="bg-white bg-opacity-90 rounded-full p-4 hover:bg-opacity-100 transition-all">
+                                    <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 5v10l8-5-8-5z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-semibold mb-2">Customer Testimonials</h3>
+                            <p class="text-gray-600 text-sm mb-3">Hear directly from our satisfied customers</p>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <span>👁️ 3.2K views</span>
+                                <span class="mx-2">•</span>
+                                <span>⏱️ 2:15</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Categories -->
+                <div class="mt-12 text-center">
+                    <h3 class="text-xl font-semibold mb-6">Browse by Category</h3>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <button class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full hover:bg-blue-200 transition-colors">🏠 Home Moving</button>
+                        <button class="bg-green-100 text-green-700 px-4 py-2 rounded-full hover:bg-green-200 transition-colors">🏢 Office Moving</button>
+                        <button class="bg-purple-100 text-purple-700 px-4 py-2 rounded-full hover:bg-purple-200 transition-colors">📦 Packing Tips</button>
+                        <button class="bg-orange-100 text-orange-700 px-4 py-2 rounded-full hover:bg-orange-200 transition-colors">😊 Customer Stories</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold mb-4">📞 Get Your Free Quote Today!</h2>
+                    <p class="text-xl opacity-90">Ready to move? Contact us for a personalized quote</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <!-- Contact Info -->
+                    <div class="space-y-6">
+                        <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">📱 Contact Information</h3>
+                            <div class="space-y-3">
+                                <p class="flex items-center"><span class="mr-3">📞</span> +91 93388 88550</p>
+                                <p class="flex items-center"><span class="mr-3">📧</span> support@atozpackersmovers.in</p>
+                                <p class="flex items-center"><span class="mr-3">🌐</span> www.atozpackersmovers.in</p>
+                                <p class="flex items-center"><span class="mr-3">📍</span> Serving Pan India</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white bg-opacity-10 rounded-lg p-6">
+                            <h3 class="text-xl font-semibold mb-4">⏰ Business Hours</h3>
+                            <div class="space-y-2">
+                                <p>Monday - Saturday: 8:00 AM - 8:00 PM</p>
+                                <p>Sunday: 9:00 AM - 6:00 PM</p>
+                                <p class="text-yellow-300">🚨 Emergency Support: 24/7</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Quote Form -->
+                    <div class="bg-white rounded-xl p-8 text-gray-900">
+                        <h3 class="text-2xl font-bold mb-6 text-center">Get Instant Quote</h3>
+                        <form id="quoteForm" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" id="quoteName" placeholder="Your Name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="tel" id="quotePhone" placeholder="Phone Number" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <input type="text" id="quoteFromCity" placeholder="From City" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <input type="text" id="quoteToCity" placeholder="To City" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <select id="quoteMovingType" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="">Select Moving Type</option>
+                                <option value="Home Relocation">Home Relocation</option>
+                                <option value="Office Moving">Office Moving</option>
+                                <option value="Vehicle Transportation">Vehicle Transportation</option>
+                            </select>
+                            <textarea id="quoteRequirements" placeholder="Additional Requirements" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                            <button type="submit" class="w-full btn-primary bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                                📞 Get Free Quote Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">🚚 A to Z Packers & Movers</h3>
+                    <p class="text-gray-400 mb-4">Your trusted partner for safe and reliable moving services across India.</p>
+                    <div class="flex space-x-4">
+                        <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center cursor-pointer hover:bg-blue-700">📘</div>
+                        <div class="w-8 h-8 bg-blue-400 rounded flex items-center justify-center cursor-pointer hover:bg-blue-500">🐦</div>
+                        <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center cursor-pointer hover:bg-red-700">📺</div>
+                        <div class="w-8 h-8 bg-green-600 rounded flex items-center justify-center cursor-pointer hover:bg-green-700">📱</div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Our Services</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#services" class="hover:text-white transition-colors">Home Relocation</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Office Moving</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Packing Services</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Transportation</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Warehousing</a></li>
+                        <li><a href="#services" class="hover:text-white transition-colors">Insurance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#about" class="hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="#tracking" class="hover:text-white transition-colors">Track Shipment</a></li>
+                        <li><a href="#calculator" class="hover:text-white transition-colors">Cost Calculator</a></li>
+                        <li><a href="#customers" class="hover:text-white transition-colors">Testimonials</a></li>
+                        <li><a href="#videos" class="hover:text-white transition-colors">Videos</a></li>
+                        <li><a href="#contact" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact Info</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-center"><span class="mr-2">📞</span> +91 93388 88550</li>
+                        <li class="flex items-center"><span class="mr-2">📧</span> support@atozpackersmovers.in</li>
+                        <li class="flex items-center"><span class="mr-2">🌐</span> www.atozpackersmovers.in</li>
+                        <li class="flex items-center"><span class="mr-2">⏰</span> 24/7 Emergency Support</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 A to Z Packers & Movers. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
+        <!-- WhatsApp Button -->
+        <a href="https://wa.me/919338888550?text=Hello! I need help with packing and moving services." 
+           target="_blank" 
+           class="bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.785"/>
+            </svg>
+            <div class="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                Chat on WhatsApp
+            </div>
+        </a>
+        
+        <!-- Call Button -->
+        <a href="tel:+919338888550" 
+           class="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+            <div class="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                Call Now
+            </div>
+        </a>
+    </div>
+
+    <!-- Thank You Modal -->
+    <div id="thankYouModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-xl p-8 max-w-md mx-4 text-center">
+            <div class="text-6xl mb-4">✅</div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Thank You!</h3>
+            <p class="text-gray-600 mb-6">Your quote request has been sent via WhatsApp. We will contact you shortly with the best pricing for your move.</p>
+            <button onclick="closeThankYouModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Navigation functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Navigation initializing...');
+            
+            // Get all navigation elements
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const menuIcon = document.getElementById('menuIcon');
+            const closeIcon = document.getElementById('closeIcon');
+
+            console.log('Found nav links:', navLinks.length);
+            console.log('Mobile menu button:', mobileMenuBtn);
+
+            // Enhanced smooth scroll function
+            function scrollToSection(sectionId) {
+                console.log('Scrolling to section:', sectionId);
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    const headerHeight = 80; // Account for fixed header
+                    const elementPosition = element.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: elementPosition,
+                        behavior: 'smooth'
+                    });
+                    
+                    console.log('Scrolled to:', sectionId);
+                } else {
+                    console.log('Section not found:', sectionId);
+                }
+            }
+
+            // Add click handlers to ALL navigation links
+            navLinks.forEach((link, index) => {
+                console.log(`Setting up link ${index}:`, link.getAttribute('href'));
+                
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const href = this.getAttribute('href');
+                    console.log('Link clicked:', href);
+                    
+                    if (href && href.startsWith('#')) {
+                        const sectionId = href.substring(1);
+                        scrollToSection(sectionId);
+                        
+                        // Close mobile menu if open
+                        if (mobileMenu && mobileMenu.classList.contains('active')) {
+                            console.log('Closing mobile menu');
+                            mobileMenu.classList.remove('active');
+                            if (menuIcon) menuIcon.classList.remove('hidden');
+                            if (closeIcon) closeIcon.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+
+            // Enhanced mobile menu toggle
+            if (mobileMenuBtn) {
+                console.log('Setting up mobile menu button');
+                
+                mobileMenuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    console.log('Mobile menu button clicked');
+                    
+                    if (mobileMenu) {
+                        const isActive = mobileMenu.classList.contains('active');
+                        console.log('Menu currently active:', isActive);
+                        
+                        if (isActive) {
+                            mobileMenu.classList.remove('active');
+                            if (menuIcon) menuIcon.classList.remove('hidden');
+                            if (closeIcon) closeIcon.classList.add('hidden');
+                        } else {
+                            mobileMenu.classList.add('active');
+                            if (menuIcon) menuIcon.classList.add('hidden');
+                            if (closeIcon) closeIcon.classList.remove('hidden');
+                        }
+                        
+                        console.log('Menu toggled to:', !isActive);
+                    }
+                });
+            }
+
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (mobileMenu && mobileMenu.classList.contains('active')) {
+                    if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                        mobileMenu.classList.remove('active');
+                        if (menuIcon) menuIcon.classList.remove('hidden');
+                        if (closeIcon) closeIcon.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Make scrollToSection available globally for button clicks
+            window.scrollToSection = scrollToSection;
+
+            // Enhanced active section highlighting
+            function updateActiveNavLink() {
+                const sections = ['home', 'about', 'services', 'tracking', 'calculator', 'customers', 'videos', 'contact'];
+                const scrollPosition = window.scrollY + 120; // Account for header
+
+                let activeSection = 'home'; // Default to home
+
+                sections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    if (section) {
+                        const sectionTop = section.offsetTop;
+                        const sectionBottom = sectionTop + section.offsetHeight;
+                        
+                        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                            activeSection = sectionId;
+                        }
+                    }
+                });
+
+                // Update active states
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href === `#${activeSection}`) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            // Listen for scroll events with throttling
+            let scrollTimeout;
+            window.addEventListener('scroll', function() {
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+                scrollTimeout = setTimeout(updateActiveNavLink, 10);
+            });
+            
+            // Initial call to set active link
+            setTimeout(updateActiveNavLink, 100);
+            
+            console.log('Navigation setup complete');
+        });
+
+        // Calculator functionality
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const houseType = document.getElementById('houseType').value;
+            const distance = parseInt(document.getElementById('distance').value);
+            const fromCity = document.getElementById('fromCity').value;
+            const toCity = document.getElementById('toCity').value;
+            const movingDate = document.getElementById('movingDate').value;
+            const additionalServices = document.getElementById('additionalServices').value;
+
+            // Base rates per house type
+            const baseRates = {
+                '1bhk': 8000,
+                '2bhk': 12000,
+                '3bhk': 18000,
+                '4bhk': 25000,
+                'villa': 35000,
+                'office': 20000
+            };
+
+            // Calculate base cost
+            let baseCost = baseRates[houseType] || 0;
+            
+            // Distance multiplier (₹15 per km)
+            let distanceCost = distance * 15;
+            
+            // Additional services cost
+            let servicesCost = 0;
+            let serviceName = '';
+            if (additionalServices === 'packing') {
+                servicesCost = 3000;
+                serviceName = 'Professional Packing';
+            } else if (additionalServices === 'insurance') {
+                servicesCost = 1500;
+                serviceName = 'Insurance Coverage';
+            } else if (additionalServices === 'storage') {
+                servicesCost = 2000;
+                serviceName = 'Temporary Storage';
+            } else if (additionalServices === 'unpacking') {
+                servicesCost = 2500;
+                serviceName = 'Unpacking Service';
+            }
+
+            const totalCost = baseCost + distanceCost + servicesCost;
+            const minCost = Math.floor(totalCost * 0.9);
+            const maxCost = Math.floor(totalCost * 1.1);
+
+            // Display results
+            const resultsDiv = document.getElementById('calculatorResults');
+            const contentDiv = document.getElementById('calculatorContent');
+            
+            contentDiv.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3 text-lg">📋 Move Details</h4>
+                        <div class="space-y-2">
+                            <p><strong>House Type:</strong> ${houseType.toUpperCase().replace('BHK', ' BHK')}</p>
+                            <p><strong>Distance:</strong> ${distance} KM</p>
+                            <p><strong>Route:</strong> ${fromCity} → ${toCity}</p>
+                            <p><strong>Moving Date:</strong> ${new Date(movingDate).toLocaleDateString()}</p>
+                            ${serviceName ? `<p><strong>Extra Service:</strong> ${serviceName}</p>` : ''}
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-3 text-lg">💰 Cost Breakdown</h4>
+                        <div class="space-y-2">
+                            <p><strong>Base Cost:</strong> ₹${baseCost.toLocaleString()}</p>
+                            <p><strong>Distance Cost:</strong> ₹${distanceCost.toLocaleString()} (${distance} km × ₹15)</p>
+                            ${servicesCost > 0 ? `<p><strong>Service Cost:</strong> ₹${servicesCost.toLocaleString()}</p>` : ''}
+                            <div class="border-t pt-3 mt-3">
+                                <p class="text-2xl font-bold">Estimated Range:</p>
+                                <p class="text-3xl font-bold text-green-300">₹${minCost.toLocaleString()} - ₹${maxCost.toLocaleString()}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <div class="bg-white bg-opacity-20 rounded-lg p-4 mb-4">
+                        <p class="text-sm opacity-90">💡 This is an estimated cost. Final pricing may vary based on actual requirements, floor level, and additional services.</p>
+                    </div>
+                    <button onclick="scrollToSection('contact')" class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors mr-4">
+                        📞 Get Exact Quote
+                    </button>
+                    <button onclick="document.getElementById('calculatorForm').reset(); document.getElementById('calculatorResults').classList.add('hidden');" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors">
+                        🔄 Calculate Again
+                    </button>
+                </div>
+            `;
+            
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Enhanced Tracking functionality with multiple sample data
+        document.getElementById('trackBtn').addEventListener('click', function() {
+            const trackingId = document.getElementById('trackingInput').value.trim();
+            
+            if (!trackingId) {
+                alert('Please enter a tracking ID');
+                return;
+            }
+
+            if (trackingId.length !== 9 || !/^\d+$/.test(trackingId)) {
+                alert('Please enter a valid 9-digit tracking ID');
+                return;
+            }
+
+            // Show loading state
+            const btn = document.getElementById('trackBtn');
+            const btnText = document.getElementById('trackBtnText');
+            const spinner = document.getElementById('trackSpinner');
+            const resultsDiv = document.getElementById('trackingResults');
+            const errorDiv = document.getElementById('trackingError');
+            
+            btn.disabled = true;
+            btnText.textContent = 'Tracking...';
+            spinner.classList.remove('hidden');
+            resultsDiv.classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            // Simulate API call
+            setTimeout(() => {
+                // Enhanced sample tracking data
+                const sampleData = {
+                    '123456789': {
+                        status: 'in-transit',
+                        from: 'Delhi',
+                        to: 'Mumbai',
+                        currentLocation: 'Gurgaon Hub',
+                        estimatedDelivery: '2024-01-25',
+                        progress: 60,
+                        updates: [
+                            { date: '2024-01-20', time: '10:30 AM', status: 'Shipment picked up from Delhi', location: 'Delhi', icon: '📦' },
+                            { date: '2024-01-21', time: '02:15 PM', status: 'In transit to Mumbai', location: 'Gurgaon Hub', icon: '🚚' },
+                            { date: '2024-01-22', time: '09:45 AM', status: 'Reached sorting facility', location: 'Gurgaon Hub', icon: '🏢' },
+                            { date: '2024-01-23', time: '11:20 AM', status: 'Out for delivery', location: 'Mumbai', icon: '🚛' }
+                        ]
+                    },
+                    '987654321': {
+                        status: 'delivered',
+                        from: 'Bangalore',
+                        to: 'Chennai',
+                        currentLocation: 'Delivered',
+                        estimatedDelivery: '2024-01-20',
+                        progress: 100,
+                        updates: [
+                            { date: '2024-01-18', time: '09:00 AM', status: 'Shipment picked up', location: 'Bangalore', icon: '📦' },
+                            { date: '2024-01-19', time: '03:30 PM', status: 'In transit', location: 'Hosur', icon: '🚚' },
+                            { date: '2024-01-20', time: '10:15 AM', status: 'Out for delivery', location: 'Chennai', icon: '🚛' },
+                            { date: '2024-01-20', time: '04:45 PM', status: 'Successfully delivered', location: 'Chennai', icon: '✅' }
+                        ]
+                    },
+                    '555666777': {
+                        status: 'packed',
+                        from: 'Pune',
+                        to: 'Hyderabad',
+                        currentLocation: 'Pune Warehouse',
+                        estimatedDelivery: '2024-01-26',
+                        progress: 25,
+                        updates: [
+                            { date: '2024-01-22', time: '08:00 AM', status: 'Packing started', location: 'Pune', icon: '📦' },
+                            { date: '2024-01-22', time: '05:30 PM', status: 'Packing completed', location: 'Pune', icon: '✅' },
+                            { date: '2024-01-23', time: '09:00 AM', status: 'Ready for dispatch', location: 'Pune Warehouse', icon: '🏢' }
+                        ]
+                    }
+                };
+
+                const trackingData = sampleData[trackingId];
+                
+                if (trackingData) {
+                    // Show results with enhanced UI
+                    const contentDiv = document.getElementById('trackingContent');
+                    contentDiv.innerHTML = `
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-xl p-6 mb-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-bold text-gray-800">📦 Tracking ID: ${trackingId}</h3>
+                                <span class="status-${trackingData.status} px-3 py-1 rounded-full text-sm font-semibold">${trackingData.status.replace('-', ' ').toUpperCase()}</span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="space-y-2">
+                                    <p><strong>📍 From:</strong> ${trackingData.from}</p>
+                                    <p><strong>🎯 To:</strong> ${trackingData.to}</p>
+                                    <p><strong>📍 Current Location:</strong> ${trackingData.currentLocation}</p>
+                                </div>
+                                <div class="space-y-2">
+                                    <p><strong>📅 Expected Delivery:</strong> ${trackingData.estimatedDelivery}</p>
+                                    <p><strong>📊 Progress:</strong> ${trackingData.progress}%</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Progress Bar -->
+                            <div class="mb-4">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span>Progress</span>
+                                    <span>${trackingData.progress}%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="progress-bar h-3 rounded-full" style="width: ${trackingData.progress}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-gray-900 text-lg">📍 Tracking History</h4>
+                            ${trackingData.updates.map((update, index) => `
+                                <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                    <div class="text-2xl">${update.icon}</div>
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <p class="font-semibold text-gray-900">${update.status}</p>
+                                                <p class="text-sm text-gray-600">📍 ${update.location}</p>
+                                            </div>
+                                            <div class="text-right text-sm text-gray-500">
+                                                <p class="font-medium">${update.date}</p>
+                                                <p>${update.time}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    ${index === 0 ? '<div class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">Latest</div>' : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                            <p class="text-sm text-blue-800">
+                                <strong>💡 Need Help?</strong> Contact our support team at 📞 +91 93388 88550 for any queries about your shipment.
+                            </p>
+                        </div>
+                    `;
+                    resultsDiv.classList.remove('hidden');
+                } else {
+                    // Show error
+                    errorDiv.classList.remove('hidden');
+                }
+
+                // Reset button state
+                btn.disabled = false;
+                btnText.textContent = '🔍 Track Now';
+                spinner.classList.add('hidden');
+            }, 2000);
+        });
+
+        // Retry tracking
+        document.getElementById('retryTrack').addEventListener('click', function() {
+            document.getElementById('trackingError').classList.add('hidden');
+            document.getElementById('trackingInput').focus();
+        });
+
+        // Set minimum date for moving date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('movingDate').setAttribute('min', today);
+
+        // Admin Panel functionality
+        function initAdminPanel() {
+            const adminBtn = document.getElementById('adminPanelBtn');
+            const mobileAdminBtn = document.getElementById('mobileAdminBtn');
+            
+            if (adminBtn) {
+                adminBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Admin panel clicked');
+                    
+                    // Create and show admin login modal
+                    showAdminLoginModal();
+                });
+            }
+            
+            if (mobileAdminBtn) {
+                mobileAdminBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile admin panel clicked');
+                    
+                    // Close mobile menu first
+                    const mobileMenu = document.getElementById('mobileMenu');
+                    if (mobileMenu && mobileMenu.classList.contains('active')) {
+                        mobileMenu.classList.remove('active');
+                        document.getElementById('menuIcon').classList.remove('hidden');
+                        document.getElementById('closeIcon').classList.add('hidden');
+                    }
+                    
+                    // Show admin login modal
+                    showAdminLoginModal();
+                });
+            }
+        }
+        
+        function showAdminLoginModal() {
+            // Create admin login modal
+            const modalHTML = `
+                <div id="adminLoginModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <div class="bg-white rounded-xl p-8 max-w-md mx-4 w-full">
+                        <div class="text-center mb-6">
+                            <div class="text-4xl mb-4">🔐</div>
+                            <h3 class="text-2xl font-bold text-gray-900">Admin Login</h3>
+                            <p class="text-gray-600 mt-2">Enter your credentials to access the admin panel</p>
+                        </div>
+                        
+                        <form id="adminLoginForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                <input type="email" id="adminEmail" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="Enter admin email address">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                <input type="password" id="adminPassword" required 
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                       placeholder="Enter admin password">
+                            </div>
+                            
+                            <div class="flex gap-3 pt-4">
+                                <button type="submit" class="flex-1 bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold">
+                                    🔓 Login
+                                </button>
+                                <button type="button" onclick="closeAdminModal()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition-colors font-semibold">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <p class="text-xs text-blue-800">
+                                <strong>Demo Credentials:</strong><br>
+                                Email: admin@atozpackers.com<br>
+                                Password: admin123
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('adminLoginModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Add form submit handler
+            document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('adminEmail').value.trim();
+                const password = document.getElementById('adminPassword').value.trim();
+                
+                // Simple demo authentication
+                if (email === 'admin@atozpackers.com' && password === 'admin123') {
+                    closeAdminModal();
+                    showAdminDashboard();
+                } else {
+                    alert('❌ Invalid credentials! Please try again.\n\nDemo credentials:\nEmail: admin@atozpackers.com\nPassword: admin123');
+                }
+            });
+        }
+        
+        window.closeAdminModal = function() {
+            const modal = document.getElementById('adminLoginModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        async function showAdminDashboard() {
+            // Test Firebase connection first
+            let firebaseWorking = false;
+            if (window.testFirebaseConnection) {
+                firebaseWorking = await window.testFirebaseConnection();
+            }
+            
+            const dashboardHTML = `
+                <div id="adminDashboard" class="fixed inset-0 bg-gray-100 z-50 overflow-y-auto">
+                    <div class="min-h-screen">
+                        <!-- Header -->
+                        <header class="bg-white shadow-sm border-b">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div class="flex justify-between items-center py-4">
+                                    <div class="flex items-center">
+                                        <h1 class="text-2xl font-bold text-gray-900">🔐 Admin Dashboard</h1>
+                                        <span class="ml-4 px-3 py-1 text-xs rounded-full ${firebaseWorking ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                                            ${firebaseWorking ? '🔥 Firebase Connected' : '⚠️ Demo Mode'}
+                                        </span>
+                                    </div>
+                                    <button onclick="closeAdminDashboard()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                        ❌ Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- Dashboard Content -->
+                        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                            <!-- Stats Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <div class="flex items-center">
+                                        <div class="text-3xl mr-4">📦</div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Total Bookings</p>
+                                            <p class="text-2xl font-bold text-gray-900">1,247</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <div class="flex items-center">
+                                        <div class="text-3xl mr-4">🚚</div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Active Shipments</p>
+                                            <p class="text-2xl font-bold text-gray-900">89</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <div class="flex items-center">
+                                        <div class="text-3xl mr-4">😊</div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Happy Customers</p>
+                                            <p class="text-2xl font-bold text-gray-900">5,234</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <div class="flex items-center">
+                                        <div class="text-3xl mr-4">💰</div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-600">Revenue (₹)</p>
+                                            <p class="text-2xl font-bold text-gray-900">12.5L</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <h3 class="text-lg font-semibold mb-4">📋 Recent Bookings</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                            <div>
+                                                <p class="font-medium">Rajesh Kumar</p>
+                                                <p class="text-sm text-gray-600">Delhi → Mumbai</p>
+                                            </div>
+                                            <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">New</span>
+                                        </div>
+                                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                            <div>
+                                                <p class="font-medium">Priya Sharma</p>
+                                                <p class="text-sm text-gray-600">Mumbai → Pune</p>
+                                            </div>
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Confirmed</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <h3 class="text-lg font-semibold mb-4">🚛 Active Shipments</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                            <div>
+                                                <p class="font-medium">#123456789</p>
+                                                <p class="text-sm text-gray-600">In Transit</p>
+                                            </div>
+                                            <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded">60%</span>
+                                        </div>
+                                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded">
+                                            <div>
+                                                <p class="font-medium">#987654321</p>
+                                                <p class="text-sm text-gray-600">Delivered</p>
+                                            </div>
+                                            <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white rounded-lg shadow p-6">
+                                    <h3 class="text-lg font-semibold mb-4">⚡ Quick Actions</h3>
+                                    <div class="space-y-2">
+                                        <button onclick="showNewBookingModal()" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                                            ➕ New Booking
+                                        </button>
+                                        <button class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition-colors">
+                                            📊 Generate Report
+                                        </button>
+                                        <button class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 transition-colors">
+                                            👥 Manage Customers
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Firebase Status -->
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">🔥 Firebase Integration Status</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h4 class="font-medium mb-2">Connection Status</h4>
+                                        <div class="flex items-center">
+                                            <div class="w-3 h-3 rounded-full ${firebaseWorking ? 'bg-green-500' : 'bg-yellow-500'} mr-2"></div>
+                                            <span class="text-sm ${firebaseWorking ? 'text-green-700' : 'text-yellow-700'}">
+                                                ${firebaseWorking ? 'Connected & Working' : 'Demo Mode Active'}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-2">
+                                            ${firebaseWorking ? 
+                                                'Firebase is properly configured and connected to the database.' : 
+                                                'Running in demo mode. All admin functions are simulated for demonstration purposes.'
+                                            }
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium mb-2">Available Features</h4>
+                                        <ul class="text-sm space-y-1">
+                                            <li class="flex items-center">
+                                                <span class="text-green-500 mr-2">✓</span>
+                                                Admin Authentication
+                                            </li>
+                                            <li class="flex items-center">
+                                                <span class="text-green-500 mr-2">✓</span>
+                                                Dashboard Overview
+                                            </li>
+                                            <li class="flex items-center">
+                                                <span class="${firebaseWorking ? 'text-green-500' : 'text-yellow-500'} mr-2">${firebaseWorking ? '✓' : '⚠'}</span>
+                                                Database Operations
+                                            </li>
+                                            <li class="flex items-center">
+                                                <span class="${firebaseWorking ? 'text-green-500' : 'text-yellow-500'} mr-2">${firebaseWorking ? '✓' : '⚠'}</span>
+                                                Real-time Updates
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing dashboard if any
+            const existingDashboard = document.getElementById('adminDashboard');
+            if (existingDashboard) {
+                existingDashboard.remove();
+            }
+            
+            // Add dashboard to body
+            document.body.insertAdjacentHTML('beforeend', dashboardHTML);
+        }
+        
+        window.closeAdminDashboard = function() {
+            const dashboard = document.getElementById('adminDashboard');
+            if (dashboard) {
+                dashboard.remove();
+            }
+        }
+
+        // New Booking Modal Functions - Make globally available
+        window.showNewBookingModal = function() {
+            const modalHTML = `
+                <div id="newBookingModal" class="fixed inset-0 bg-black bg-opacity-50 z-60 flex items-center justify-center overflow-y-auto">
+                    <div class="bg-white rounded-xl p-8 max-w-4xl mx-4 w-full max-h-screen overflow-y-auto">
+                        <div class="text-center mb-6">
+                            <div class="text-4xl mb-4">📦</div>
+                            <h3 class="text-2xl font-bold text-gray-900">Create New Booking</h3>
+                            <p class="text-gray-600 mt-2">Enter customer and shipment details</p>
+                        </div>
+                        
+                        <form id="newBookingForm" class="space-y-6">
+                            <!-- Customer Information -->
+                            <div class="bg-blue-50 p-6 rounded-lg">
+                                <h4 class="text-lg font-semibold text-blue-900 mb-4">👤 Customer Information</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                        <input type="text" id="customerName" required 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter customer full name">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                        <input type="tel" id="customerPhone" required 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter phone number">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                        <input type="email" id="customerEmail" 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter email address">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Alternate Phone</label>
+                                        <input type="tel" id="customerAltPhone" 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter alternate phone">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shipment Details -->
+                            <div class="bg-green-50 p-6 rounded-lg">
+                                <h4 class="text-lg font-semibold text-green-900 mb-4">📍 Shipment Details</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">From Address *</label>
+                                        <textarea id="fromAddress" required rows="3"
+                                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                  placeholder="Enter complete pickup address"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">To Address *</label>
+                                        <textarea id="toAddress" required rows="3"
+                                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                  placeholder="Enter complete delivery address"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">From City *</label>
+                                        <input type="text" id="fromCityBooking" required 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter source city">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">To City *</label>
+                                        <input type="text" id="toCityBooking" required 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter destination city">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Distance (KM) *</label>
+                                        <input type="number" id="distanceBooking" required min="1" max="5000"
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                               placeholder="Enter distance in KM">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Moving Type *</label>
+                                        <select id="movingTypeBooking" required 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="">Select Moving Type</option>
+                                            <option value="Home Relocation">Home Relocation</option>
+                                            <option value="Office Moving">Office Moving</option>
+                                            <option value="Vehicle Transportation">Vehicle Transportation</option>
+                                            <option value="Packing Only">Packing Only</option>
+                                            <option value="Storage">Storage</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Booking Information -->
+                            <div class="bg-purple-50 p-6 rounded-lg">
+                                <h4 class="text-lg font-semibold text-purple-900 mb-4">📅 Booking Information</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Date *</label>
+                                        <input type="date" id="preferredDate" required 
+                                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Time</label>
+                                        <select id="preferredTime" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="">Select Time Slot</option>
+                                            <option value="Morning (8 AM - 12 PM)">Morning (8 AM - 12 PM)</option>
+                                            <option value="Afternoon (12 PM - 4 PM)">Afternoon (12 PM - 4 PM)</option>
+                                            <option value="Evening (4 PM - 8 PM)">Evening (4 PM - 8 PM)</option>
+                                            <option value="Flexible">Flexible</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
+                                        <select id="priorityLevel" 
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                            <option value="Normal">Normal</option>
+                                            <option value="High">High Priority</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Services -->
+                            <div class="bg-orange-50 p-6 rounded-lg">
+                                <h4 class="text-lg font-semibold text-orange-900 mb-4">🛠️ Additional Services</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="space-y-3">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="packingService" class="mr-3 h-4 w-4 text-blue-600">
+                                            <span class="text-sm">Professional Packing (+₹3,000)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="unpackingService" class="mr-3 h-4 w-4 text-blue-600">
+                                            <span class="text-sm">Unpacking Service (+₹2,500)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="insuranceService" class="mr-3 h-4 w-4 text-blue-600">
+                                            <span class="text-sm">Insurance Coverage (+₹1,500)</span>
+                                        </label>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="storageService" class="mr-3 h-4 w-4 text-blue-600">
+                                            <span class="text-sm">Temporary Storage (+₹2,000)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="assemblyService" class="mr-3 h-4 w-4 text-blue-600">
+                                            <span class="text-sm">Furniture Assembly (+₹1,000)</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="checkbox" id="cleaningService" class="mr-3 h-4 w-4 text-blue-600">
+                                            <span class="text-sm">Post-Move Cleaning (+₹1,500)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Special Instructions -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Special Instructions</label>
+                                <textarea id="specialInstructions" rows="3"
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                          placeholder="Any special requirements or instructions..."></textarea>
+                            </div>
+                            
+                            <div class="flex gap-3 pt-4">
+                                <button type="submit" class="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                                    ✅ Create Booking
+                                </button>
+                                <button type="button" onclick="closeNewBookingModal()" class="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition-colors font-semibold">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing modal if any
+            const existingModal = document.getElementById('newBookingModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('preferredDate').setAttribute('min', today);
+            
+            // Add form submit handler
+            document.getElementById('newBookingForm').addEventListener('submit', handleNewBookingSubmit);
+        }
+
+        window.closeNewBookingModal = function() {
+            const modal = document.getElementById('newBookingModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function handleNewBookingSubmit(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = {
+                // Customer Info
+                customerName: document.getElementById('customerName').value.trim(),
+                customerPhone: document.getElementById('customerPhone').value.trim(),
+                customerEmail: document.getElementById('customerEmail').value.trim(),
+                customerAltPhone: document.getElementById('customerAltPhone').value.trim(),
+                
+                // Shipment Details
+                fromAddress: document.getElementById('fromAddress').value.trim(),
+                toAddress: document.getElementById('toAddress').value.trim(),
+                fromCity: document.getElementById('fromCityBooking').value.trim(),
+                toCity: document.getElementById('toCityBooking').value.trim(),
+                distance: document.getElementById('distanceBooking').value,
+                movingType: document.getElementById('movingTypeBooking').value,
+                
+                // Booking Info
+                preferredDate: document.getElementById('preferredDate').value,
+                preferredTime: document.getElementById('preferredTime').value,
+                priorityLevel: document.getElementById('priorityLevel').value || 'Normal',
+                
+                // Additional Services
+                services: {
+                    packing: document.getElementById('packingService').checked,
+                    unpacking: document.getElementById('unpackingService').checked,
+                    insurance: document.getElementById('insuranceService').checked,
+                    storage: document.getElementById('storageService').checked,
+                    assembly: document.getElementById('assemblyService').checked,
+                    cleaning: document.getElementById('cleaningService').checked
+                },
+                
+                specialInstructions: document.getElementById('specialInstructions').value.trim(),
+                
+                // System fields
+                bookingId: generateBookingId(),
+                trackingId: generateTrackingId(),
+                status: 'enquiry',
+                createdAt: new Date().toISOString(),
+                createdBy: 'admin'
+            };
+            
+            // Validate required fields
+            const requiredFields = ['customerName', 'customerPhone', 'fromAddress', 'toAddress', 'fromCity', 'toCity', 'distance', 'movingType', 'preferredDate'];
+            const missingFields = requiredFields.filter(field => !formData[field]);
+            
+            if (missingFields.length > 0) {
+                alert('Please fill in all required fields: ' + missingFields.join(', '));
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading-spinner inline-block mr-2"></div>Creating...';
+            
+            try {
+                // Try to save to Firebase if available
+                let saved = false;
+                if (window.firebaseDb && window.firebaseModules) {
+                    try {
+                        const { collection, doc, setDoc, serverTimestamp } = window.firebaseModules;
+                        const bookingsRef = collection(window.firebaseDb, 'bookings');
+                        const bookingDoc = doc(bookingsRef, formData.bookingId);
+                        
+                        await setDoc(bookingDoc, {
+                            ...formData,
+                            createdAt: serverTimestamp(),
+                            updatedAt: serverTimestamp()
+                        });
+                        
+                        // Also create tracking entry
+                        const trackingRef = collection(window.firebaseDb, 'tracking');
+                        const trackingDoc = doc(trackingRef, formData.trackingId);
+                        
+                        await setDoc(trackingDoc, {
+                            trackingId: formData.trackingId,
+                            bookingId: formData.bookingId,
+                            customerName: formData.customerName,
+                            fromCity: formData.fromCity,
+                            toCity: formData.toCity,
+                            status: 'enquiry',
+                            currentLocation: formData.fromCity,
+                            estimatedDelivery: calculateEstimatedDelivery(formData.preferredDate),
+                            progress: 10,
+                            updates: [{
+                                date: new Date().toISOString().split('T')[0],
+                                time: new Date().toLocaleTimeString('en-US', { hour12: true }),
+                                status: 'Booking created - Enquiry received',
+                                location: formData.fromCity,
+                                icon: '📝'
+                            }],
+                            createdAt: serverTimestamp()
+                        });
+                        
+                        saved = true;
+                        console.log('✅ Booking saved to Firebase successfully');
+                    } catch (error) {
+                        console.error('❌ Firebase save failed:', error);
+                        saved = false;
+                    }
+                }
+                
+                // Show success message
+                const successMessage = saved ? 
+                    `✅ Booking Created Successfully!
+
+📋 Booking ID: ${formData.bookingId}
+📦 Tracking ID: ${formData.trackingId}
+👤 Customer: ${formData.customerName}
+📍 Route: ${formData.fromCity} → ${formData.toCity}
+📅 Date: ${new Date(formData.preferredDate).toLocaleDateString()}
+
+${saved ? 'Data saved to Firebase database.' : 'Data saved locally (demo mode).'}` :
+                    `✅ Booking Created Successfully!
+
+📋 Booking ID: ${formData.bookingId}
+📦 Tracking ID: ${formData.trackingId}
+👤 Customer: ${formData.customerName}
+📍 Route: ${formData.fromCity} → ${formData.toCity}
+📅 Date: ${new Date(formData.preferredDate).toLocaleDateString()}
+
+Running in demo mode - data simulated.`;
+                
+                alert(successMessage);
+                
+                // Close modal and refresh dashboard if needed
+                closeNewBookingModal();
+                
+                // Optionally refresh the dashboard stats
+                // refreshDashboardStats();
+                
+            } catch (error) {
+                console.error('Error creating booking:', error);
+                alert('❌ Error creating booking. Please try again.');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+
+        function generateBookingId() {
+            const prefix = 'BK';
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return prefix + timestamp + random;
+        }
+
+        function generateTrackingId() {
+            return Math.floor(100000000 + Math.random() * 900000000).toString();
+        }
+
+        function calculateEstimatedDelivery(preferredDate) {
+            const date = new Date(preferredDate);
+            date.setDate(date.getDate() + 3); // Add 3 days for delivery
+            return date.toISOString().split('T')[0];
+        }
+        
+        // Initialize admin panel when DOM is loaded
+        initAdminPanel();
+
+        // Quote Form WhatsApp Integration
+        document.getElementById('quoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const name = document.getElementById('quoteName').value.trim();
+            const phone = document.getElementById('quotePhone').value.trim();
+            const fromCity = document.getElementById('quoteFromCity').value.trim();
+            const toCity = document.getElementById('quoteToCity').value.trim();
+            const movingType = document.getElementById('quoteMovingType').value;
+            const requirements = document.getElementById('quoteRequirements').value.trim();
+            
+            // Validate required fields
+            if (!name || !phone || !fromCity || !toCity || !movingType) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Create WhatsApp message
+            const message = `🚚 *New Quote Request from Website*
+
+👤 *Name:* ${name}
+📞 *Phone:* ${phone}
+📍 *From:* ${fromCity}
+🎯 *To:* ${toCity}
+🏠 *Moving Type:* ${movingType}
+${requirements ? `📝 *Requirements:* ${requirements}` : ''}
+
+Please provide quote for the above moving requirements.`;
+            
+            // Encode message for URL
+            const encodedMessage = encodeURIComponent(message);
+            
+            // Open WhatsApp with pre-filled message
+            const whatsappURL = `https://wa.me/919338888550?text=${encodedMessage}`;
+            window.open(whatsappURL, '_blank');
+            
+            // Show thank you modal
+            document.getElementById('thankYouModal').classList.remove('hidden');
+            
+            // Reset form
+            this.reset();
+        });
+
+        // Close thank you modal function
+        function closeThankYouModal() {
+            document.getElementById('thankYouModal').classList.add('hidden');
+        }
+
+        // Enhanced form validation and submission for other forms
+        document.querySelectorAll('form').forEach(form => {
+            if (form.id === 'calculatorForm' || form.id === 'quoteForm') return; // Skip these as they're handled separately
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simple form validation
+                const inputs = this.querySelectorAll('input[required], select[required]');
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('border-red-500');
+                    } else {
+                        input.classList.remove('border-red-500');
+                    }
+                });
+                
+                if (isValid) {
+                    // Simulate form submission
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                    
+                    setTimeout(() => {
+                        alert('Thank you! Your request has been submitted. We will contact you shortly.');
+                        this.reset();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }, 2000);
+                } else {
+                    alert('Please fill in all required fields.');
+                }
+            });
+        });
+
+        // Smooth scrolling for footer links
+        document.querySelectorAll('footer a[href^="#"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Add loading animation to page
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9786d43e12118fb6',t:'MTc1Njc1MTMyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
