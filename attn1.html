@@ -6,35 +6,467 @@
     <title>A to Z Packers & Movers - Staff Attendance v2.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+        }
         .status-pill { @apply px-3 py-1 rounded-full text-xs font-medium; }
-        .status-none { @apply bg-gray-700 text-gray-300; }
-        .status-in { @apply bg-green-700 text-green-200; }
-        .status-complete { @apply bg-blue-700 text-blue-200; }
-        .status-break { @apply bg-yellow-700 text-yellow-200; }
-        .status-overtime { @apply bg-purple-700 text-purple-200; }
-        .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
-        .btn-secondary { @apply bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
-        .btn-success { @apply bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
-        .btn-warning { @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
-        .btn-danger { @apply bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
+        .status-none { @apply bg-gray-200 text-gray-700; }
+        .status-in { @apply bg-green-100 text-green-800; }
+        .status-complete { @apply bg-blue-100 text-blue-800; }
+        .status-break { @apply bg-yellow-100 text-yellow-800; }
+        .status-overtime { @apply bg-purple-100 text-purple-800; }
+        .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-blue-700; }
+        .btn-secondary { @apply bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-gray-700; }
+        .btn-success { @apply bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-green-700; }
+        .btn-warning { @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-orange-700; }
+        .btn-danger { @apply bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors shadow-md border-3 border-red-700; }
         .input-field { 
             background-color: white !important; 
-            border: 1px solid #9ca3af !important; 
-            color: #000000 !important; 
+            border: 3px solid #e5e7eb !important; 
+            color: #1f2937 !important; 
             border-radius: 0.5rem !important; 
             padding: 0.75rem 1rem !important; 
             outline: none !important;
         }
         .input-field:focus { 
             border-color: #3b82f6 !important; 
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important; 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important; 
         }
         .input-field::placeholder { 
             color: #6b7280 !important; 
         }
         #map { height: 200px; border-radius: 0.5rem; }
         .notification-badge { @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center; }
+        .gradient-bg { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+        .card-hover { 
+            transition: all 0.2s; 
+            background-color: white;
+            border: 3px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .card-hover:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .location-status {
+            padding: 12px;
+            border-radius: 8px;
+            margin: 8px 0;
+            font-size: 14px;
+            border: 3px solid;
+        }
+        .location-success { 
+            background-color: #d1fae5; 
+            color: #065f46; 
+            border-color: #10b981;
+        }
+        .location-error { 
+            background-color: #fecaca; 
+            color: #7f1d1d; 
+            border-color: #ef4444;
+        }
+        .location-warning { 
+            background-color: #fed7aa; 
+            color: #92400e; 
+            border-color: #f59e0b;
+        }
+        .location-info { 
+            background-color: #dbeafe; 
+            color: #1e3a8a; 
+            border-color: #3b82f6;
+        }
+        .header-bg {
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+        }
+        .menu-bg {
+            background-color: #f9fafb;
+            border-right: 3px solid #e5e7eb;
+            color: #1f2937;
+        }
+        .text-primary { color: #1f2937 !important; }
+        .text-secondary { color: #6b7280 !important; }
+        .bg-card { 
+            background-color: white !important; 
+            border: 3px solid #e5e7eb !important;
+        }
+        
+        /* Professional Attendance Box Styles */
+        .attendance-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 3px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .attendance-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+        }
+        
+        .attendance-box-inner {
+            width: 100%;
+        }
+        
+        .attendance-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .attendance-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .attendance-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .attendance-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .check-in-box .attendance-status {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .check-out-box .attendance-status {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .check-in-box:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+        }
+        
+        .check-out-box:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.15);
+        }
+        
+        .attendance-box.disabled {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            transform: none !important;
+        }
+        
+        .attendance-box.disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: #e2e8f0 !important;
+        }
+        
+        .attendance-box.completed .attendance-status {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        /* Break Button Styles */
+        .break-btn {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #374151;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .break-btn:hover {
+            border-color: #9ca3af;
+            background: #f9fafb;
+            transform: translateY(-1px);
+        }
+        
+        .break-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .break-icon {
+            font-size: 18px;
+        }
+        
+        .break-text {
+            font-size: 14px;
+        }
+        
+        /* Action Button Styles */
+        .action-btn {
+            width: 100%;
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .primary-action {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .primary-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .emergency-action {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+        
+        .emergency-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .action-icon {
+            font-size: 18px;
+        }
+        
+        .action-text {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="bg-white text-primary min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loading" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <p class="text-secondary">Loading A to Z Attendance v2.1...</p>
+        </div>
+    </div>
+
+    <!-- Simple Login Screen -->
+    <div id="loginScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-card rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="gradient-bg w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-2xl">📦</span>
+                </div>
+                <h1 class="text-2xl font-bold text-green-600 mb-2">A to Z Packers & Movers</h1>
+                <p class="text-secondary">Staff Attendance System v2.1</p>
+            </div>
+
+            <div class="space-y-4">
+                <input type="text" id="employeeName" placeholder="Your Full Name" class="input-field w-full">
+                <input type="tel" id="employeePhone" placeholder="Phone Number" class="input-field w-full">
+                <select id="employeeDepartment" class="input-field w-full">
+                    <option value="">Select Department</option>
+                    <option value="packing">Packing Team</option>
+                    <option value="loading">Loading Team</option>
+                    <option value="transport">Transport</option>
+                    <option value="office">Office Staff</option>
+                    <option value="management">Management</option>
+                </select>
+                <input type="password" id="adminPin" placeholder="Admin PIN (Optional - for admin access)" class="input-field w-full">
+                <button id="loginBtn" class="btn-primary w-full">Start Attendance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="header-bg p-4 sticky top-0 z-40 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-lg font-bold text-white">A to Z Packers & Movers</h1>
+                    <p class="text-sm text-green-100" id="userInfo">Welcome back!</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <button id="notificationBtn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded relative text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 19H6.5A2.5 2.5 0 014 16.5v-9A2.5 2.5 0 016.5 5h11A2.5 2.5 0 0120 7.5v3.5"></path>
+                            </svg>
+                            <span id="notificationBadge" class="notification-badge hidden">0</span>
+                        </button>
+                    </div>
+                    <span id="statusPill" class="status-pill status-none">—</span>
+                    <button id="menuBtn" class="p-2 hover:bg-white hover:bg-opacity-20 rounded text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Menu Overlay -->
+        <div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+            <div class="menu-bg w-64 h-full p-4">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-primary">Menu</h2>
+                    <button id="closeMenu" class="p-2 hover:bg-gray-200 rounded text-primary">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-2">
+                    <button id="showAttendanceView" class="w-full text-left p-3 hover:bg-green-50 rounded flex items-center text-primary">
+                        <span class="mr-3">🏠</span> Home
+                    </button>
+                    <button id="showHistoryView" class="w-full text-left p-3 hover:bg-blue-50 rounded flex items-center text-primary">
+                        <span class="mr-3">📊</span> History
+                    </button>
+                    <button id="showProfileView" class="w-full text-left p-3 hover:bg-blue-50 rounded flex items-center text-primary">
+                        <span class="mr-3">👤</span> Profile
+                    </button>
+                    <button id="showAdminView" class="w-full text-left p-3 hover:bg-blue-50 rounded hidden flex items-center text-primary">
+                        <span class="mr-3">👥</span> Admin Panel
+                    </button>
+                    <hr class="border-gray-300 my-2">
+                    <button id="logoutBtn" class="w-full text-left p-3 hover:bg-red-50 rounded text-red-600 flex items-center">
+                        <span class="mr-3">🚪</span> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance View -->
+        <div id="attendanceView" class="p-4 space-y-6">
+            <!-- Current Status Card -->
+            <div class="bg-card rounded-xl p-4 card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold text-primary">Today's Status</h2>
+                    <div id="workingHours" class="text-sm text-secondary">0h 0m</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-secondary">Check-In</p>
+                        <p id="checkInTime" class="font-medium text-primary">—</p>
+                    </div>
+                    <div>
+                        <p class="text-secondary">Check-Out</p>
+                        <p id="checkOutTime" class="font-medium text-primary">—</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm mt-3">
+                    <div>
+                        <p class="text-secondary">Break Time</p>
+                        <p id="breakTime" class="font-medium text-primary">—</p>
+                    </div>
+                    <div>
+                        <p class="text-secondary">Overtime</p>
+                        <p id="overtimeHours" class="font-medium text-primary">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-card rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-green-600" id="monthlyDays">0</div>
+                    <div class="text-xs text-secondary">Days This Month</div>
+                </div>
+                <div class="bg-card rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-blue-600" id="weeklyHours">0h</div>
+                    <div class="text-xs text-secondary">Hours This Week</div>
+                </div>
+                <div class="bg-card rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-purple-600" id="avgHours">0h</div>
+                    <div class="text-xs text-secondary">Daily Average</div>
+                </div>
+            </div>
+
+            <!-- Enhanced Location Section -->
+            <div class="bg-card rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-3 text-primary">📍 Location Services</h2>
+                
+                <!-- Location Status Display -->
+                <div id="locationStatus" class="location-info">
+                    <strong>🔍 Location Status:</strong> Checking availability...
+                </div>
+                
+                <!-- Location Controls -->
+                <div class="mb-4">
+                    <button id="getLocationBtn" class="btn-primary w-full">📍 Get Current Location</button>
+                </div>
+                
+                <!-- Location Information Display -->
+                <div id="locationInfo" class="hidden space-y-3">
+                    <div id="map" class="bg-green-50 border-3 border-green-200 rounded-lg flex items-center justify-center text-green-700 p-4">
+                        <p>📍 Location: <span id="locationDisplay">—</span></p>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <p><span class="text-secondary">Coordinates:</span> <span id="coordinates" class="text-primary">—</span></p>
+                        <p><span class="text-secondary">Address:</span> <span id="address" class="text-primary font-medium">—</span></p>
+                        <p><span class="text-secondary">Accuracy:</span> <span id="accuracy" class="text-primary">—</span></p>
+                        <p><span class="text-secondary">Method:</span> <span id="locationMethod" class="text-primary">—</span></p>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Error Display -->
+                <div id="locationError" class="hidden location-error">
+                    <div class="flex items-start space-x-2">
+                        <span class="text-xl">⚠️</span>
+                        <div class="flex-1">
+                            <p class="font-medium">Location Access Issue:</p>
+                            <p id="locationErrorMessage" class="mb-2">—</p>
+                            <div class="text-sm">
+                                <p><strong>💡 Solutions:</strong></p>
+                                <div id="locationSolutions" class="ml-4 space-y-1">
+                                    <!-- Solutions will be populated dynamically -->
+                                </div>
+                                    .notification-badge { @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center; }
         .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .card-hover { transition: transform 0.2s; }
         .card-hover:hover { transform: translateY(-2px); }
@@ -1446,4 +1878,5 @@
         });
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97978e439021836f',t:'MTc1NjkyNjcxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
 </html>
