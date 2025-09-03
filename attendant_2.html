@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A to Z Packers & Movers - Staff Attendance v2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .status-pill { @apply px-3 py-1 rounded-full text-xs font-medium; }
+        .status-none { @apply bg-gray-700 text-gray-300; }
+        .status-in { @apply bg-green-700 text-green-200; }
+        .status-complete { @apply bg-blue-700 text-blue-200; }
+        .status-break { @apply bg-yellow-700 text-yellow-200; }
+        .status-overtime { @apply bg-purple-700 text-purple-200; }
+        .btn-primary { @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
+        .btn-secondary { @apply bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
+        .btn-success { @apply bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
+        .btn-warning { @apply bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
+        .btn-danger { @apply bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors; }
+        .input-field { 
+            background-color: white !important; 
+            border: 1px solid #9ca3af !important; 
+            color: #000000 !important; 
+            border-radius: 0.5rem !important; 
+            padding: 0.75rem 1rem !important; 
+            outline: none !important;
+        }
+        .input-field:focus { 
+            border-color: #3b82f6 !important; 
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5) !important; 
+        }
+        .input-field::placeholder { 
+            color: #6b7280 !important; 
+        }
+        #map { height: 200px; border-radius: 0.5rem; }
+        .notification-badge { @apply absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: transform 0.2s; }
+        .card-hover:hover { transform: translateY(-2px); }
+        .pulse-animation { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Loading Screen -->
+    <div id="loading" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p class="text-gray-400">Loading A to Z Attendance v2.0...</p>
+        </div>
+    </div>
+
+    <!-- Simple Login Screen -->
+    <div id="loginScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-gray-800 rounded-xl p-6 w-full max-w-md shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="gradient-bg w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-2xl">📦</span>
+                </div>
+                <h1 class="text-2xl font-bold text-blue-400 mb-2">A to Z Packers & Movers</h1>
+                <p class="text-gray-400">Staff Attendance System v2.0</p>
+            </div>
+
+            <div class="space-y-4">
+                <input type="text" id="employeeName" placeholder="Your Full Name" class="input-field w-full">
+                <input type="tel" id="employeePhone" placeholder="Phone Number" class="input-field w-full">
+                <select id="employeeDepartment" class="input-field w-full">
+                    <option value="">Select Department</option>
+                    <option value="packing">Packing Team</option>
+                    <option value="loading">Loading Team</option>
+                    <option value="transport">Transport</option>
+                    <option value="office">Office Staff</option>
+                    <option value="management">Management</option>
+                </select>
+                <input type="password" id="adminPin" placeholder="Admin PIN (Optional - for admin access)" class="input-field w-full">
+                <button id="loginBtn" class="btn-primary w-full">Start Attendance</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="bg-gray-800 p-4 sticky top-0 z-40 shadow-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-lg font-bold text-blue-400">A to Z Packers & Movers</h1>
+                    <p class="text-sm text-gray-400" id="userInfo">Welcome back!</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <button id="notificationBtn" class="p-2 hover:bg-gray-700 rounded relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 19H6.5A2.5 2.5 0 014 16.5v-9A2.5 2.5 0 016.5 5h11A2.5 2.5 0 0120 7.5v3.5"></path>
+                            </svg>
+                            <span id="notificationBadge" class="notification-badge hidden">0</span>
+                        </button>
+                    </div>
+                    <span id="statusPill" class="status-pill status-none">—</span>
+                    <button id="menuBtn" class="p-2 hover:bg-gray-700 rounded">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Menu Overlay -->
+        <div id="menuOverlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+            <div class="bg-gray-800 w-64 h-full p-4">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold">Menu</h2>
+                    <button id="closeMenu" class="p-2 hover:bg-gray-700 rounded">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="space-y-2">
+                    <button id="showAttendanceView" class="w-full text-left p-3 hover:bg-gray-700 rounded flex items-center">
+                        <span class="mr-3">📍</span> Attendance
+                    </button>
+                    <button id="showHistoryView" class="w-full text-left p-3 hover:bg-gray-700 rounded flex items-center">
+                        <span class="mr-3">📊</span> History
+                    </button>
+                    <button id="showProfileView" class="w-full text-left p-3 hover:bg-gray-700 rounded flex items-center">
+                        <span class="mr-3">👤</span> Profile
+                    </button>
+                    <button id="showAdminView" class="w-full text-left p-3 hover:bg-gray-700 rounded hidden flex items-center">
+                        <span class="mr-3">👥</span> Admin Panel
+                    </button>
+                    <hr class="border-gray-700 my-2">
+                    <button id="logoutBtn" class="w-full text-left p-3 hover:bg-gray-700 rounded text-red-400 flex items-center">
+                        <span class="mr-3">🚪</span> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance View -->
+        <div id="attendanceView" class="p-4 space-y-6">
+            <!-- Current Status Card -->
+            <div class="bg-gray-800 rounded-xl p-4 card-hover">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-semibold">Today's Status</h2>
+                    <div id="workingHours" class="text-sm text-gray-400">0h 0m</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-400">Check-In</p>
+                        <p id="checkInTime" class="font-medium">—</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Check-Out</p>
+                        <p id="checkOutTime" class="font-medium">—</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 text-sm mt-3">
+                    <div>
+                        <p class="text-gray-400">Break Time</p>
+                        <p id="breakTime" class="font-medium">—</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-400">Overtime</p>
+                        <p id="overtimeHours" class="font-medium">—</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-gray-800 rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-green-400" id="monthlyDays">0</div>
+                    <div class="text-xs text-gray-400">Days This Month</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-blue-400" id="weeklyHours">0h</div>
+                    <div class="text-xs text-gray-400">Hours This Week</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 text-center card-hover">
+                    <div class="text-2xl font-bold text-purple-400" id="avgHours">0h</div>
+                    <div class="text-xs text-gray-400">Daily Average</div>
+                </div>
+            </div>
+
+            <!-- Location Section -->
+            <div class="bg-gray-800 rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-3">Location</h2>
+                <button id="getLocationBtn" class="btn-secondary w-full mb-4">📍 Get Current Location</button>
+                
+                <div id="locationInfo" class="hidden space-y-3">
+                    <div id="map" class="bg-gray-700 rounded-lg flex items-center justify-center text-gray-400">
+                        <p>📍 Location: <span id="locationDisplay">—</span></p>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <p><span class="text-gray-400">Coordinates:</span> <span id="coordinates">—</span></p>
+                        <p><span class="text-gray-400">Address:</span> <span id="address">—</span></p>
+                        <p><span class="text-gray-400">Accuracy:</span> <span id="accuracy">—</span></p>
+                    </div>
+                </div>
+                
+                <div id="locationError" class="hidden text-red-400 text-sm mt-2"></div>
+            </div>
+
+            <!-- Attendance Actions -->
+            <div class="bg-gray-800 rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-4">Actions</h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="checkInBtn" class="btn-success">✅ Check In</button>
+                    <button id="checkOutBtn" class="btn-warning">🏁 Check Out</button>
+                    <button id="breakStartBtn" class="btn-secondary">☕ Start Break</button>
+                    <button id="breakEndBtn" class="btn-secondary">⏰ End Break</button>
+                </div>
+                <div class="mt-3 space-y-2">
+                    <button id="sendToBossBtn" class="btn-primary w-full">📱 Send to Boss</button>
+                    <button id="emergencyBtn" class="btn-danger w-full">🚨 Emergency Alert</button>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="bg-gray-800 rounded-xl p-4 card-hover">
+                <h2 class="text-lg font-semibold mb-3">Daily Notes</h2>
+                <textarea id="dailyNotes" placeholder="Add notes about your work today..." 
+                    class="input-field w-full h-20 resize-none"></textarea>
+                <button id="saveNotesBtn" class="btn-primary mt-2">💾 Save Notes</button>
+            </div>
+        </div>
+
+        <!-- History View -->
+        <div id="historyView" class="hidden p-4 space-y-6">
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h2 class="text-lg font-semibold mb-4">Attendance History</h2>
+                <div class="flex space-x-2 mb-4">
+                    <select id="historyFilter" class="input-field flex-1">
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="all">All Time</option>
+                    </select>
+                    <button id="exportBtn" class="btn-secondary">📊 Export</button>
+                </div>
+                <div id="historyList" class="space-y-2">
+                    <!-- History will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="profileView" class="hidden p-4 space-y-6">
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h2 class="text-lg font-semibold mb-4">Profile Settings</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Name</label>
+                        <input type="text" id="profileName" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Phone</label>
+                        <input type="tel" id="profilePhone" class="input-field w-full">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Department</label>
+                        <select id="profileDepartment" class="input-field w-full">
+                            <option value="packing">Packing Team</option>
+                            <option value="loading">Loading Team</option>
+                            <option value="transport">Transport</option>
+                            <option value="office">Office Staff</option>
+                            <option value="management">Management</option>
+                        </select>
+                    </div>
+                    <button id="updateProfileBtn" class="btn-primary">💾 Update Profile</button>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h3 class="font-semibold mb-3">Preferences</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center justify-between">
+                        <span>Auto-location on check-in</span>
+                        <input type="checkbox" id="autoLocation" class="toggle" checked>
+                    </label>
+                    <label class="flex items-center justify-between">
+                        <span>Push notifications</span>
+                        <input type="checkbox" id="pushNotifications" class="toggle" checked>
+                    </label>
+                    <label class="flex items-center justify-between">
+                        <span>Dark mode</span>
+                        <input type="checkbox" id="darkMode" class="toggle" checked>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin View -->
+        <div id="adminView" class="hidden p-4 space-y-6">
+            <!-- Admin Header -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h2 class="text-lg font-semibold mb-3">Admin Dashboard</h2>
+                <div class="text-sm space-y-1">
+                    <p><span class="text-gray-400">Company:</span> A to Z Packers & Movers</p>
+                    <p><span class="text-gray-400">Boss WhatsApp:</span> +91 93388 88550</p>
+                    <p><span class="text-gray-400">Total Employees:</span> <span id="totalEmployees">—</span></p>
+                </div>
+            </div>
+
+            <!-- Real-time Dashboard -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-green-400" id="currentlyIn">0</div>
+                    <div class="text-sm text-gray-400">Currently In</div>
+                </div>
+                <div class="bg-gray-800 rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-yellow-400" id="onBreak">0</div>
+                    <div class="text-sm text-gray-400">On Break</div>
+                </div>
+            </div>
+
+            <!-- Today's Summary -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h3 class="font-semibold mb-3">Today's Summary</h3>
+                <div id="todaySummary" class="grid grid-cols-4 gap-4 text-center">
+                    <div><p class="text-2xl font-bold text-blue-400">0</p><p class="text-xs text-gray-400">Total</p></div>
+                    <div><p class="text-2xl font-bold text-green-400">0</p><p class="text-xs text-gray-400">Active</p></div>
+                    <div><p class="text-2xl font-bold text-purple-400">0</p><p class="text-xs text-gray-400">Completed</p></div>
+                    <div><p class="text-2xl font-bold text-orange-400">0h</p><p class="text-xs text-gray-400">Total Hours</p></div>
+                </div>
+            </div>
+
+            <!-- Staff Directory -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold">Staff Directory</h3>
+                    <button id="refreshStaffBtn" class="btn-secondary text-sm py-1 px-3">🔄 Refresh</button>
+                </div>
+                <div id="staffDirectory" class="space-y-2">
+                    <p class="text-gray-400">No staff data available in demo mode</p>
+                </div>
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="bg-gray-800 rounded-xl p-4">
+                <h3 class="font-semibold mb-3">Admin Actions</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="exportAllBtn" class="btn-primary">📊 Export All Data</button>
+                    <button id="sendBulkBtn" class="btn-secondary">📱 Bulk Message</button>
+                    <button id="resetDayBtn" class="btn-warning">🔄 Reset Day</button>
+                    <button id="backupBtn" class="btn-success">💾 Backup Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="hidden fixed bottom-4 left-4 right-4 bg-gray-800 text-white p-4 rounded-lg shadow-lg z-50">
+        <p id="toastMessage"></p>
+    </div>
+
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="hidden fixed top-16 right-4 bg-gray-800 rounded-lg shadow-lg p-4 w-80 z-50">
+        <h3 class="font-semibold mb-3">Notifications</h3>
+        <div id="notificationList" class="space-y-2 max-h-60 overflow-y-auto">
+            <p class="text-gray-400 text-sm">No new notifications</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            ADMIN_PIN: "9999",
+            BOSS_WHATSAPP_E164: "+919338888550",
+            WORK_HOURS: {
+                START: "09:00",
+                END: "18:00",
+                BREAK_DURATION: 60 // minutes
+            }
+        };
+
+        // Global State
+        let currentUser = null;
+        let currentLocation = null;
+        let todayAttendance = null;
+        let workTimer = null;
+        let notifications = [];
+        let attendanceHistory = [];
+
+        // Utility Functions
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = `fixed bottom-4 left-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-red-600' : 
+                type === 'success' ? 'bg-green-600' : 
+                type === 'warning' ? 'bg-orange-600' : 'bg-gray-800'
+            } text-white`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 4000);
+        }
+
+        function formatIST(date) {
+            return new Intl.DateTimeFormat('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            }).format(date);
+        }
+
+        function formatDuration(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            return `${hours}h ${mins}m`;
+        }
+
+        function calculateWorkingHours() {
+            if (!todayAttendance || !todayAttendance.checkInAt) return "0h 0m";
+            
+            const checkIn = new Date(todayAttendance.checkInAt);
+            const checkOut = todayAttendance.checkOutAt ? new Date(todayAttendance.checkOutAt) : new Date();
+            const breakTime = todayAttendance.totalBreakTime || 0;
+            
+            const totalMinutes = Math.floor((checkOut - checkIn) / (1000 * 60)) - breakTime;
+            return formatDuration(Math.max(0, totalMinutes));
+        }
+
+        function addNotification(message, type = 'info') {
+            const notification = {
+                id: Date.now(),
+                message,
+                type,
+                timestamp: new Date(),
+                read: false
+            };
+            notifications.unshift(notification);
+            updateNotificationUI();
+        }
+
+        function updateNotificationUI() {
+            const badge = document.getElementById('notificationBadge');
+            const unreadCount = notifications.filter(n => !n.read).length;
+            
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            const list = document.getElementById('notificationList');
+            if (notifications.length === 0) {
+                list.innerHTML = '<p class="text-gray-400 text-sm">No new notifications</p>';
+            } else {
+                list.innerHTML = notifications.slice(0, 10).map(n => `
+                    <div class="p-2 rounded ${n.read ? 'bg-gray-700' : 'bg-blue-900'} text-sm">
+                        <p>${n.message}</p>
+                        <p class="text-xs text-gray-400 mt-1">${formatIST(n.timestamp)}</p>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Local Storage Functions
+        function saveToStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function loadFromStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        }
+
+        function getTodayKey() {
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+            return `attendance_${currentUser.name}_${dateStr}`;
+        }
+
+        // Authentication Functions
+        function showLoginScreen() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            startWorkTimer();
+        }
+
+        function login(name, phone, department, adminPin) {
+            if (!name || !phone || !department) {
+                throw new Error('Please fill in all required fields');
+            }
+
+            const isAdmin = adminPin === CONFIG.ADMIN_PIN;
+            
+            currentUser = {
+                name,
+                phone,
+                department,
+                role: isAdmin ? 'admin' : 'staff',
+                preferences: {
+                    autoLocation: true,
+                    pushNotifications: true,
+                    darkMode: true
+                }
+            };
+
+            saveToStorage('currentUser', currentUser);
+            return currentUser;
+        }
+
+        // Location Functions
+        function getCurrentLocation() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported'));
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    position => resolve(position),
+                    error => reject(error),
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+                );
+            });
+        }
+
+        async function reverseGeocode(lat, lng) {
+            // Simplified address lookup - in a real app you'd use a geocoding service
+            return `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        }
+
+        // Attendance Functions
+        function loadTodayAttendance() {
+            if (!currentUser) return;
+
+            const todayKey = getTodayKey();
+            todayAttendance = loadFromStorage(todayKey);
+            updateAttendanceUI();
+            loadQuickStats();
+        }
+
+        function updateAttendanceUI() {
+            const statusPill = document.getElementById('statusPill');
+            const checkInTime = document.getElementById('checkInTime');
+            const checkOutTime = document.getElementById('checkOutTime');
+            const breakTime = document.getElementById('breakTime');
+            const overtimeHours = document.getElementById('overtimeHours');
+            const workingHours = document.getElementById('workingHours');
+            
+            const checkInBtn = document.getElementById('checkInBtn');
+            const checkOutBtn = document.getElementById('checkOutBtn');
+            const breakStartBtn = document.getElementById('breakStartBtn');
+            const breakEndBtn = document.getElementById('breakEndBtn');
+
+            if (!todayAttendance) {
+                statusPill.className = 'status-pill status-none';
+                statusPill.textContent = '—';
+                checkInTime.textContent = '—';
+                checkOutTime.textContent = '—';
+                breakTime.textContent = '—';
+                overtimeHours.textContent = '—';
+                workingHours.textContent = '0h 0m';
+                
+                checkInBtn.disabled = false;
+                checkOutBtn.disabled = true;
+                breakStartBtn.disabled = true;
+                breakEndBtn.disabled = true;
+            } else {
+                workingHours.textContent = calculateWorkingHours();
+                
+                if (todayAttendance.checkInAt) {
+                    checkInTime.textContent = formatIST(new Date(todayAttendance.checkInAt));
+                    checkInBtn.disabled = true;
+                    breakStartBtn.disabled = false;
+                }
+                
+                if (todayAttendance.checkOutAt) {
+                    checkOutTime.textContent = formatIST(new Date(todayAttendance.checkOutAt));
+                    statusPill.className = 'status-pill status-complete';
+                    statusPill.textContent = 'Completed';
+                    checkOutBtn.disabled = true;
+                    breakStartBtn.disabled = true;
+                    breakEndBtn.disabled = true;
+                } else if (todayAttendance.onBreak) {
+                    statusPill.className = 'status-pill status-break';
+                    statusPill.textContent = 'On Break';
+                    checkOutBtn.disabled = false;
+                    breakStartBtn.disabled = true;
+                    breakEndBtn.disabled = false;
+                } else if (todayAttendance.checkInAt) {
+                    statusPill.className = 'status-pill status-in';
+                    statusPill.textContent = 'Checked-In';
+                    checkOutBtn.disabled = false;
+                    breakEndBtn.disabled = true;
+                }
+                
+                breakTime.textContent = formatDuration(todayAttendance.totalBreakTime || 0);
+                
+                // Calculate overtime
+                if (todayAttendance.checkInAt) {
+                    const workMinutes = Math.floor((new Date() - new Date(todayAttendance.checkInAt)) / (1000 * 60));
+                    const standardWorkDay = 9 * 60; // 9 hours
+                    const overtime = Math.max(0, workMinutes - standardWorkDay - (todayAttendance.totalBreakTime || 0));
+                    overtimeHours.textContent = formatDuration(overtime);
+                }
+            }
+        }
+
+        function loadQuickStats() {
+            if (!currentUser) return;
+
+            // Load from localStorage - simplified stats
+            const allAttendance = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(`attendance_${currentUser.name}_`)) {
+                    const data = loadFromStorage(key);
+                    if (data) allAttendance.push(data);
+                }
+            }
+
+            // Calculate stats
+            const thisMonth = allAttendance.filter(a => {
+                const date = new Date(a.checkInAt);
+                const now = new Date();
+                return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            });
+
+            let totalMinutes = 0;
+            thisMonth.forEach(a => {
+                if (a.checkInAt && a.checkOutAt) {
+                    const duration = (new Date(a.checkOutAt) - new Date(a.checkInAt)) / (1000 * 60);
+                    totalMinutes += duration - (a.totalBreakTime || 0);
+                }
+            });
+
+            document.getElementById('monthlyDays').textContent = thisMonth.length;
+            document.getElementById('weeklyHours').textContent = formatDuration(totalMinutes);
+            document.getElementById('avgHours').textContent = formatDuration(thisMonth.length > 0 ? totalMinutes / thisMonth.length : 0);
+        }
+
+        function startWorkTimer() {
+            if (workTimer) clearInterval(workTimer);
+            
+            workTimer = setInterval(() => {
+                if (todayAttendance && todayAttendance.checkInAt && !todayAttendance.checkOutAt) {
+                    document.getElementById('workingHours').textContent = calculateWorkingHours();
+                }
+            }, 60000); // Update every minute
+        }
+
+        async function checkIn() {
+            if (!currentLocation) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = getTodayKey();
+
+            todayAttendance = {
+                name: currentUser.name,
+                phone: currentUser.phone,
+                department: currentUser.department,
+                date: now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }),
+                checkInAt: now.toISOString(),
+                checkInLat: currentLocation.lat,
+                checkInLng: currentLocation.lng,
+                checkInAddress: currentLocation.address,
+                status: 'checked-in',
+                totalBreakTime: 0,
+                onBreak: false,
+                notes: ''
+            };
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification('Successfully checked in!', 'success');
+            showToast('Checked in successfully!', 'success');
+        }
+
+        async function checkOut() {
+            if (!currentLocation) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const todayKey = getTodayKey();
+
+            // End any active break
+            if (todayAttendance.onBreak && todayAttendance.breakStartAt) {
+                const breakDuration = Math.floor((now - new Date(todayAttendance.breakStartAt)) / (1000 * 60));
+                todayAttendance.totalBreakTime = (todayAttendance.totalBreakTime || 0) + breakDuration;
+            }
+
+            todayAttendance.checkOutAt = now.toISOString();
+            todayAttendance.checkOutLat = currentLocation.lat;
+            todayAttendance.checkOutLng = currentLocation.lng;
+            todayAttendance.checkOutAddress = currentLocation.address;
+            todayAttendance.status = 'completed';
+            todayAttendance.onBreak = false;
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification('Successfully checked out!', 'success');
+            showToast('Checked out successfully!', 'success');
+        }
+
+        async function startBreak() {
+            const now = new Date();
+            const todayKey = getTodayKey();
+
+            todayAttendance.onBreak = true;
+            todayAttendance.breakStartAt = now.toISOString();
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification('Break started', 'info');
+            showToast('Break started', 'info');
+        }
+
+        async function endBreak() {
+            const now = new Date();
+            const todayKey = getTodayKey();
+            
+            const breakDuration = Math.floor((now - new Date(todayAttendance.breakStartAt)) / (1000 * 60));
+            todayAttendance.totalBreakTime = (todayAttendance.totalBreakTime || 0) + breakDuration;
+            todayAttendance.onBreak = false;
+            delete todayAttendance.breakStartAt;
+
+            saveToStorage(todayKey, todayAttendance);
+            updateAttendanceUI();
+            addNotification(`Break ended (${formatDuration(breakDuration)})`, 'info');
+            showToast(`Break ended (${formatDuration(breakDuration)})`, 'info');
+        }
+
+        function generateWhatsAppMessage() {
+            if (!todayAttendance || !currentLocation) {
+                showToast('No attendance data available', 'error');
+                return;
+            }
+
+            let message = `🏢 A to Z Packers & Movers — Attendance Report\n\n`;
+            message += `👤 Employee: ${todayAttendance.name}\n`;
+            message += `📱 Phone: ${todayAttendance.phone}\n`;
+            message += `🏷️ Department: ${todayAttendance.department}\n`;
+            message += `📅 Date: ${todayAttendance.date}\n\n`;
+
+            if (todayAttendance.checkInAt) {
+                message += `⏰ Check-In: ${formatIST(new Date(todayAttendance.checkInAt))} IST\n`;
+                message += `📍 In Location: ${todayAttendance.checkInLat},${todayAttendance.checkInLng}\n`;
+            }
+
+            if (todayAttendance.checkOutAt) {
+                message += `⏰ Check-Out: ${formatIST(new Date(todayAttendance.checkOutAt))} IST\n`;
+                message += `📍 Out Location: ${todayAttendance.checkOutLat},${todayAttendance.checkOutLng}\n`;
+                message += `⏱️ Total Hours: ${calculateWorkingHours()}\n`;
+                message += `☕ Break Time: ${formatDuration(todayAttendance.totalBreakTime || 0)}\n`;
+            }
+
+            message += `\n🗺️ Map: https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`;
+
+            if (todayAttendance.notes) {
+                message += `\n📝 Notes: ${todayAttendance.notes}`;
+            }
+
+            const whatsappUrl = `https://wa.me/${CONFIG.BOSS_WHATSAPP_E164.replace('+', '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function loadHistory(filter = 'week') {
+            if (!currentUser) return;
+
+            const allAttendance = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(`attendance_${currentUser.name}_`)) {
+                    const data = loadFromStorage(key);
+                    if (data) allAttendance.push(data);
+                }
+            }
+
+            // Filter by date range
+            let filteredAttendance = allAttendance;
+            const now = new Date();
+            
+            if (filter === 'week') {
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredAttendance = allAttendance.filter(a => new Date(a.checkInAt) >= weekAgo);
+            } else if (filter === 'month') {
+                filteredAttendance = allAttendance.filter(a => {
+                    const date = new Date(a.checkInAt);
+                    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+                });
+            }
+
+            // Sort by date (newest first)
+            filteredAttendance.sort((a, b) => new Date(b.checkInAt) - new Date(a.checkInAt));
+
+            const historyHtml = filteredAttendance.map(data => {
+                const duration = data.checkOutAt ? 
+                    Math.floor((new Date(data.checkOutAt) - new Date(data.checkInAt)) / (1000 * 60)) - (data.totalBreakTime || 0) :
+                    0;
+                
+                return `
+                    <div class="bg-gray-700 rounded-lg p-3">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium">${data.date}</span>
+                            <span class="text-sm ${data.status === 'completed' ? 'text-green-400' : 'text-yellow-400'}">
+                                ${data.status === 'completed' ? '✅ Completed' : '⏳ In Progress'}
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-300 space-y-1">
+                            <p>In: ${formatIST(new Date(data.checkInAt))}</p>
+                            ${data.checkOutAt ? `<p>Out: ${formatIST(new Date(data.checkOutAt))}</p>` : ''}
+                            ${data.checkOutAt ? `<p>Duration: ${formatDuration(duration)}</p>` : ''}
+                            ${data.totalBreakTime ? `<p>Break: ${formatDuration(data.totalBreakTime)}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('historyList').innerHTML = historyHtml || '<p class="text-gray-400">No attendance records found</p>';
+        }
+
+        function loadProfile() {
+            if (!currentUser) return;
+
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profilePhone').value = currentUser.phone;
+            document.getElementById('profileDepartment').value = currentUser.department;
+            
+            if (currentUser.preferences) {
+                document.getElementById('autoLocation').checked = currentUser.preferences.autoLocation;
+                document.getElementById('pushNotifications').checked = currentUser.preferences.pushNotifications;
+                document.getElementById('darkMode').checked = currentUser.preferences.darkMode;
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is already logged in
+            const savedUser = loadFromStorage('currentUser');
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('userInfo').textContent = `Welcome, ${currentUser.name}!`;
+                
+                if (currentUser.role === 'admin') {
+                    document.getElementById('showAdminView').classList.remove('hidden');
+                }
+                
+                showMainApp();
+                loadTodayAttendance();
+            } else {
+                showLoginScreen();
+            }
+
+            // Login action
+            document.getElementById('loginBtn').addEventListener('click', async () => {
+                const name = document.getElementById('employeeName').value;
+                const phone = document.getElementById('employeePhone').value;
+                const department = document.getElementById('employeeDepartment').value;
+                const adminPin = document.getElementById('adminPin').value;
+
+                try {
+                    login(name, phone, department, adminPin);
+                    document.getElementById('userInfo').textContent = `Welcome, ${currentUser.name}!`;
+                    
+                    if (currentUser.role === 'admin') {
+                        document.getElementById('showAdminView').classList.remove('hidden');
+                    }
+                    
+                    showMainApp();
+                    loadTodayAttendance();
+                } catch (error) {
+                    showToast(error.message, 'error');
+                }
+            });
+
+            // Menu actions
+            document.getElementById('menuBtn').addEventListener('click', () => {
+                document.getElementById('menuOverlay').classList.remove('hidden');
+            });
+
+            document.getElementById('closeMenu').addEventListener('click', () => {
+                document.getElementById('menuOverlay').classList.add('hidden');
+            });
+
+            // View switching
+            document.getElementById('showAttendanceView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('attendanceView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+            });
+
+            document.getElementById('showHistoryView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('historyView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+                loadHistory();
+            });
+
+            document.getElementById('showProfileView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('profileView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+                loadProfile();
+            });
+
+            document.getElementById('showAdminView').addEventListener('click', () => {
+                document.querySelectorAll('[id$="View"]').forEach(view => view.classList.add('hidden'));
+                document.getElementById('adminView').classList.remove('hidden');
+                document.getElementById('menuOverlay').classList.add('hidden');
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                currentUser = null;
+                if (workTimer) clearInterval(workTimer);
+                showLoginScreen();
+            });
+
+            // Notification panel
+            document.getElementById('notificationBtn').addEventListener('click', () => {
+                const panel = document.getElementById('notificationPanel');
+                panel.classList.toggle('hidden');
+                // Mark all as read when opened
+                notifications.forEach(n => n.read = true);
+                updateNotificationUI();
+            });
+
+            // Location and attendance actions
+            document.getElementById('getLocationBtn').addEventListener('click', async () => {
+                try {
+                    showToast('Getting location...', 'info');
+                    const position = await getCurrentLocation();
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+                    const address = await reverseGeocode(lat, lng);
+
+                    currentLocation = { lat, lng, address, accuracy };
+
+                    document.getElementById('coordinates').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    document.getElementById('address').textContent = address;
+                    document.getElementById('accuracy').textContent = `±${Math.round(accuracy)}m`;
+                    document.getElementById('locationDisplay').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    document.getElementById('locationInfo').classList.remove('hidden');
+                    document.getElementById('locationError').classList.add('hidden');
+
+                    showToast('Location updated successfully!', 'success');
+                } catch (error) {
+                    document.getElementById('locationError').textContent = `Location error: ${error.message}`;
+                    document.getElementById('locationError').classList.remove('hidden');
+                    showToast('Failed to get location', 'error');
+                }
+            });
+
+            document.getElementById('checkInBtn').addEventListener('click', checkIn);
+            document.getElementById('checkOutBtn').addEventListener('click', checkOut);
+            document.getElementById('breakStartBtn').addEventListener('click', startBreak);
+            document.getElementById('breakEndBtn').addEventListener('click', endBreak);
+            
+            document.getElementById('sendToBossBtn').addEventListener('click', () => {
+                if (!todayAttendance) {
+                    showToast('No attendance data to send', 'error');
+                    return;
+                }
+                generateWhatsAppMessage();
+            });
+
+            document.getElementById('emergencyBtn').addEventListener('click', () => {
+                if (!currentLocation) {
+                    showToast('Please get your location first', 'error');
+                    return;
+                }
+                
+                const message = `🚨 EMERGENCY ALERT - A to Z Packers & Movers\n\nEmployee needs immediate assistance!\n\nLocation: ${currentLocation.lat},${currentLocation.lng}\nAddress: ${currentLocation.address}\nTime: ${formatIST(new Date())} IST\n\nMap: https://maps.google.com/?q=${currentLocation.lat},${currentLocation.lng}`;
+                const whatsappUrl = `https://wa.me/${CONFIG.BOSS_WHATSAPP_E164.replace('+', '')}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+                showToast('Emergency alert sent!', 'warning');
+            });
+
+            // Notes
+            document.getElementById('saveNotesBtn').addEventListener('click', async () => {
+                if (!todayAttendance) {
+                    showToast('No attendance record for today', 'error');
+                    return;
+                }
+
+                const notes = document.getElementById('dailyNotes').value;
+                const todayKey = getTodayKey();
+                
+                todayAttendance.notes = notes;
+                saveToStorage(todayKey, todayAttendance);
+                showToast('Notes saved successfully!', 'success');
+            });
+
+            // History filter
+            document.getElementById('historyFilter').addEventListener('change', (e) => {
+                loadHistory(e.target.value);
+            });
+
+            // Profile update
+            document.getElementById('updateProfileBtn').addEventListener('click', async () => {
+                const phone = document.getElementById('profilePhone').value;
+                const department = document.getElementById('profileDepartment').value;
+                const preferences = {
+                    autoLocation: document.getElementById('autoLocation').checked,
+                    pushNotifications: document.getElementById('pushNotifications').checked,
+                    darkMode: document.getElementById('darkMode').checked
+                };
+
+                currentUser.phone = phone;
+                currentUser.department = department;
+                currentUser.preferences = preferences;
+                
+                saveToStorage('currentUser', currentUser);
+                showToast('Profile updated successfully!', 'success');
+            });
+
+            // Export functionality
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const allAttendance = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith(`attendance_${currentUser.name}_`)) {
+                        const data = loadFromStorage(key);
+                        if (data) allAttendance.push(data);
+                    }
+                }
+                
+                const csvContent = "data:text/csv;charset=utf-8," 
+                    + "Date,Check In,Check Out,Break Time,Total Hours,Notes\n"
+                    + allAttendance.map(a => {
+                        const duration = a.checkOutAt ? 
+                            Math.floor((new Date(a.checkOutAt) - new Date(a.checkInAt)) / (1000 * 60)) - (a.totalBreakTime || 0) :
+                            0;
+                        return `${a.date},${formatIST(new Date(a.checkInAt))},${a.checkOutAt ? formatIST(new Date(a.checkOutAt)) : ''},${formatDuration(a.totalBreakTime || 0)},${formatDuration(duration)},"${a.notes || ''}"`;
+                    }).join("\n");
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `attendance_${currentUser.name}_${new Date().toISOString().split('T')[0]}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showToast('Attendance data exported!', 'success');
+            });
+
+            // Close notification panel when clicking outside
+            document.addEventListener('click', (e) => {
+                const panel = document.getElementById('notificationPanel');
+                const btn = document.getElementById('notificationBtn');
+                if (!panel.contains(e.target) && !btn.contains(e.target)) {
+                    panel.classList.add('hidden');
+                }
+            });
+
+            // Load daily notes if exists
+            setTimeout(() => {
+                if (todayAttendance && todayAttendance.notes) {
+                    document.getElementById('dailyNotes').value = todayAttendance.notes;
+                }
+            }, 1000);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9797d2a090dc49a6',t:'MTc1NjkyOTUxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
