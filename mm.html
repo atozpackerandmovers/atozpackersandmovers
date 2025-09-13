@@ -439,6 +439,429 @@
     </script>
     
     <script>
+      // Global variables
+      let currentUserRole = 'member';
+      let accounts = [];
+      let transactions = [];
+
+      // 1) Central tab switcher
+      function showSection(id) {
+        // hide all sections
+        document.querySelectorAll(".tab-section").forEach(s => s.classList.add("hidden"));
+        // show selected
+        document.getElementById(id)?.classList.remove("hidden");
+
+        // update active state in navbar
+        document.querySelectorAll("#mainNav .tab-link").forEach(a => {
+          a.classList.toggle("active", a.dataset.target === id);
+          a.classList.toggle("border-blue-500", a.dataset.target === id);
+          a.classList.toggle("text-blue-600", a.dataset.target === id);
+          a.classList.toggle("border-transparent", a.dataset.target !== id);
+          a.classList.toggle("text-gray-500", a.dataset.target !==        class AppController {
+            constructor() {
+                this.currentUser = null;
+                this.currentRole = 'member';
+                this.accounts = [];
+                this.transactions = [];
+                this.isOnline = navigator.onLine;
+                this.init();
+            }
+            
+            async init() {
+                this.setupNetworkListeners();
+                this.setupAuthListener();
+                this.setupEventListeners();
+                this.showLoginView();
+            }
+            
+            setupNetworkListeners() {
+                window.addEventListener('online', () => {
+                    this.isOnline = true;
+                    this.showToast('Back online! Syncing data...', 'success');
+                });
+                
+                window.addEventListener('offline', () => {
+                    this.isOnline = false;
+                    this.showToast('You are offline. Changes will be saved locally.', 'warning');
+                });
+            }
+            
+            setupAuthListener() {
+                onAuthStateChanged(auth, (user) => {
+                    this.currentUser = user;
+                    if (user) {
+                        this.handleSuccessfulLogin();
+                    } else {
+                        this.handleLogout();
+                    }
+                });
+            }
+            
+            setupEventListeners() {
+                // Login form
+                document.getElementById('loginForm')?.addEventListener('submit', (e) => this.handleLogin(e));
+                
+                // Logout button
+                document.getElementById('logoutBtn')?.addEventListener('click', () => this.logout());
+                
+                // Role switching
+                document.getElementById('memberTab')?.addEventListener('click', () => this.switchRole('member'));
+                document.getElementById('adminTab')?.addEventListener('click', () => this.switchRole('admin'));
+            }
+            
+            switchRole(role) {
+                const memberTab = document.getElementById('memberTab');
+                const adminTab = document.getElementById('adminTab');
+                const currentRoleInput = document.getElementById('currentRole');
+                
+                if (role === 'member') {
+                    memberTab.className = 'px-3 py-2 rounded bg-blue-600 text-white';
+                    adminTab.className = 'px-3 py-2 rounded bg-gray-200';
+                } else {
+                    memberTab.className = 'px-3 py-2 rounded bg-gray-200';
+                    adminTab.className = 'px-3 py-2 rounded bg-purple-600 text-white';
+                }
+                
+                this.currentRole = role;
+                if (currentRoleInput) {
+                    currentRoleInput.value = role;
+                }
+            }
+            
+            async handleLogin(e) {
+                e.preventDefault();
+                const form = e.target;
+                const email = form.querySelector('input[type="email"]').value.trim();
+                const password = form.querySelector('input[type="password"]').value;
+                
+                if (!email || !password) {
+                    this.showToast('Please enter email and password', 'error');
+                    return;
+                }
+                
+                try {
+                    this.showLoading(true);
+                    await signInWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                    this.showToast(error.message || 'Login failed', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+            
+            async handleSuccessfulLogin() {
+                try {
+                    this.showLoading(true);
+                    await this.loadData();
+                    this.showAppView();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.showToast('Error loading data. Working in offline mode.', 'warning');
+                    this.showAppView();
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+            
+            handleLogout() {
+                this.currentUser = null;
+                this.accounts = [];
+                this.transactions = [];
+                this.showLoginView();
+            }
+            
+            async logout() {
+                try {
+                    await signOut(auth);
+                    this.showToast('Logged out successfully', 'success');
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            }
+            
+            showLoginView() {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('appSection').classList.add('hidden');
+            }
+            
+            showAppView() {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('appSection').classList.remove('hidden');
+                wireTabs('#mainNav');
+                this.updateDashboard();
+            }
+            
+            async loadData() {
+                if (this.isOnline) {
+                    await this.loadFromFirebase();
+                } else {
+                    this.loadFromLocal();
+                }
+            }
+            
+            async loadFromFirebase() {
+                try {
+                    // Load accounts
+                    const accountsQuery = query(collection(db, 'accounts'), orderBy('createdAt', 'desc'));
+                    const accountsSnapshot = await getDocs(accountsQuery);
+                    this.accounts = accountsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // Load transactions
+                    const transactionsQuery = query(collection(db, 'transactions'), orderBy('createdAt', 'desc'));
+                    const transactionsSnapshot = await getDocs(transactionsQuery);
+                    this.transactions = transactionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // Save to local storage as backup
+                    localStorage.setItem('accounts', JSON.stringify(this.accounts));
+                    localStorage.setItem('transactions', JSON.stringify(this.transactions));
+                    
+                } catch (error) {
+                    console.error('Firebase load error:', error);
+                    throw error;
+                }
+            }
+            
+            loadFromLocal() {
+                try {
+                    this.accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+                    this.transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+                } catch (error) {
+                    console.error('Local storage load error:', error);
+                    this.accounts = [];
+                    this.transactions = [];
+                }
+            }
+            
+            updateDashboard() {
+                const totalCredit = this.transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+                const totalDebit = this.transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0);
+                const netBalance = totalCredit - totalDebit;
+                
+                document.getElementById('totalCredit').textContent = `₹${totalCredit.toFixed(2)}`;
+                document.getElementById('totalDebit').textContent = `₹${totalDebit.toFixed(2)}`;
+                document.getElementById('totalAccounts').textContent = this.accounts.length;
+                
+                const netBalanceEl = document.getElementById('netBalance');
+                netBalanceEl.textContent = `₹${netBalance.toFixed(2)}`;
+                netBalanceEl.className = `text-lg sm:text-2xl font-bold ${netBalance >= 0 ? 'text-green-600' : 'text-red-600'}`;
+                
+                this.updateRecentTransactions();
+            }
+            
+            updateRecentTransactions() {
+                const container = document.getElementById('recentTransactions');
+                if (!container) return;
+                
+                const recentTx = this.transactions.slice(0, 5);
+                
+                if (recentTx.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No transactions yet. Add your first transaction!</p>';
+                    return;
+                }
+                
+                container.innerHTML = recentTx.map(tx => {
+                    const account = this.accounts.find(acc => acc.id === tx.accountId);
+                    return `
+                        <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg ${tx.type === 'credit' ? 'border-l-4 border-l-green-500' : 'border-l-4 border-l-red-500'}">
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">${account ? account.name : 'Account'}</p>
+                                <p class="text-sm text-gray-600">${tx.description || 'No description'}</p>
+                                <p class="text-xs text-gray-500">${new Date(tx.date).toLocaleDateString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold ${tx.type === 'credit' ? 'text-green-600' : 'text-red-600'}">
+                                    ${tx.type === 'credit' ? '+' : '-'}₹${tx.amount.toFixed(2)}
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            showLoading(show) {
+                const loader = document.getElementById('loadingIndicator');
+                if (loader) {
+                    loader.classList.toggle('hidden', !show);
+                }
+            }
+            
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const messageEl = document.getElementById('toastMessage');
+                
+                if (!toast || !messageEl) return;
+                
+                messageEl.textContent = message;
+                
+                // Set color based on type
+                toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 ${
+                    type === 'success' ? 'bg-green-500 text-white' :
+                    type === 'error' ? 'bg-red-500 text-white' :
+                    type === 'warning' ? 'bg-yellow-500 text-white' :
+                    'bg-blue-500 text-white'
+                }`;
+                
+                toast.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 3000);
+            }
+        }
+        
+        // Tab Navigation System
+        function wireTabs() {
+          document.querySelectorAll("[data-tab-target]").forEach(btn => {
+            btn.addEventListener("click", () => {
+              showSection(btn.getAttribute("data-tab-target"));
+            });
+          });
+        }
+        
+        // Make functions globally available
+        window.wireTabs = wireTabs;
+        window.AppController = AppController;
+    </script>
+    
+    <script type="module">
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+          from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc }
+          from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const auth = getAuth();
+
+        // --- UI helpers ---
+        const $ = (id) => document.getElementById(id);
+        function setBtnWorking(on) {
+          const b = $("loginBtn");
+          if (!b) return;
+          b.disabled = !!on;
+          b.textContent = on ? "Logging in..." : "Login";
+        }
+        function showLogin() {
+          $("loginSection")?.classList.remove("hidden");
+          $("appSection")?.classList.add("hidden");
+          setBtnWorking(false);
+        }
+        function showApp() {
+          $("loginSection")?.classList.add("hidden");
+          $("appSection")?.classList.remove("hidden");
+          // if you have a tab manager:
+          if (typeof window.showSection === "function") window.showSection("dashboard");
+        }
+
+        // --- ensure DOM is ready before wiring events ---
+        window.addEventListener("DOMContentLoaded", () => {
+          // Role toggle
+          let selectedRole = 'member'; // Default role
+          const roleBtns = document.querySelectorAll(".role-btn");
+          roleBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+              roleBtns.forEach(b => b.classList.remove("active"));
+              btn.classList.add("active");
+              selectedRole = btn.dataset.role; // Store selected role
+              document.body.dataset.role = selectedRole;
+              $("currentRole").value = selectedRole;
+            });
+          });
+
+          // Login click
+          $("loginBtn")?.addEventListener("click", async (e) => {
+            e.preventDefault(); // stop form submit reloads
+            const email = $("loginEmail")?.value?.trim();
+            const pass  = $("loginPassword")?.value ?? "";
+
+            if (!email || !pass) { alert("Enter email & password"); return; }
+
+            try {
+              setBtnWorking(true);
+              await signInWithEmailAndPassword(auth, email, pass);
+              
+              // After successful login, check if user has permission for selected role
+              const userDoc = await getDoc(doc(getFirestore(), 'users', auth.currentUser.uid));
+              const userRole = userDoc.exists() ? userDoc.data().role || 'member' : 'member';
+              
+              // Check if user can access the selected role
+              if (selectedRole === 'admin' && userRole !== 'admin') {
+                alert('You do not have admin privileges. Redirecting to member view.');
+                selectedRole = 'member';
+              }
+              
+              // Set hash based on selected/allowed role
+              window.location.hash = `#/${selectedRole}`;
+              
+            } catch (err) {
+              alert(err.message || "Login failed");
+              setBtnWorking(false);
+            }
+          });
+        });
+
+        // Hash routing system
+        function handleHashChange() {
+          const hash = window.location.hash;
+          if (hash === '#/admin') {
+            showAdminUI();
+          } else if (hash === '#/member') {
+            showMemberUI();
+          } else if (auth.currentUser) {
+            // Default to member if logged in but no hash
+            window.location.hash = '#/member';
+          }
+        }
+
+        function showAdminUI() {
+          $("appSection")?.classList.remove("hidden");
+          $("loginSection")?.classList.add("hidden");
+          // Show admin-specific content
+          document.body.dataset.currentView = 'admin';
+          if (typeof window.showSection === "function") window.showSection("dashboard");
+        }
+
+        function showMemberUI() {
+          $("appSection")?.classList.remove("hidden");
+          $("loginSection")?.classList.add("hidden");
+          // Show member-specific content
+          document.body.dataset.currentView = 'member';
+          if (typeof window.showSection === "function") window.showSection("dashboard");
+        }
+
+        // Listen for hash changes
+        window.addEventListener('hashchange', handleHashChange);
+
+        // Switch UI automatically when auth changes (also handles refresh)
+        onAuthStateChanged(auth, async (user) => {
+          if (user) {
+            // Check user role from Firestore and redirect accordingly
+            try {
+              const userDoc = await getDoc(doc(getFirestore(), 'users', user.uid));
+              const userRole = userDoc.exists() ? userDoc.data().role || 'member' : 'member';
+              
+              // If no hash is set, redirect based on user's role
+              if (!window.location.hash) {
+                window.location.hash = `#/${userRole}`;
+              } else {
+                handleHashChange();
+              }
+            } catch (error) {
+              console.error('Error fetching user role:', error);
+              // Default to member on error
+              window.location.hash = '#/member';
+            }
+          } else {
+            showLogin();
+            window.location.hash = '';
+          }
+        });
+
+        // (Optional) global logout if you add a logout button with id="logoutBtn"
+        $("logoutBtn")?.addEventListener("click", async () => {
+          await signOut(auth);
+        });
+    </script>
+    
+    <script>
       // 1) Central tab switcher
       function showSection(id) {
         // hide all sections
@@ -763,4 +1186,5 @@
     </div>
 
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97e60285429c8fb6',t:'MTc1Nzc0OTM2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
 </html>
