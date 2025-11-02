@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Firestore Quick Test</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;padding:16px}
+  #log{white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:12px;margin-top:12px}
+  button{padding:10px 16px;border:0;border-radius:8px;background:#16a34a;color:#fff;font-weight:600}
+</style>
+</head>
+<body>
+<h2>Firestore Write Test</h2>
+<p>Tap the button to anonymously sign-in and write a test document to <code>records/9999999999</code>.</p>
+<button id="btn">Write Test Doc</button>
+<div id="log"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAvFWvRBBLXSxpgU2tLLCHB-iaDhhpPLBk",
+  authDomain: "a-to-z-packers-and-movers-crm.firebaseapp.com",
+  projectId: "a-to-z-packers-and-movers-crm",
+  storageBucket: "a-to-z-packers-and-movers-crm.firebasestorage.app",
+  messagingSenderId: "817932881323",
+  appId: "1:817932881323:web:bd00748dfde67e8c6d16ee"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const log = (m)=>{ document.getElementById('log').textContent += m + "\\n"; }
+
+document.getElementById('btn').addEventListener('click', async()=>{
+  try{
+    await signInAnonymously(auth);
+    log("Signed-in anonymously.");
+    await setDoc(doc(db, "records", "9999999999"), {
+      customerName: "Test",
+      mobileNumber: "9999999999",
+      createdAt: serverTimestamp()
+    }, { merge:true });
+    log("✅ Wrote test doc to records/9999999999");
+  }catch(e){
+    log("❌ Error: " + (e && e.message ? e.message : e));
+    console.error(e);
+  }
+});
+</script>
+</body>
+</html>
