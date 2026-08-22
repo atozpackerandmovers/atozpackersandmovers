@@ -14159,6 +14159,7 @@ import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.
 
 <script type="module" id="azp-business-director-phase1-js">
 import { getApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
 import { getFirestore, collection, getDocsFromServer, query, limit } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-firestore.js";
 import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-functions.js";
 
@@ -14181,10 +14182,11 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
     {key:'itemLists',name:'itemLists',module:'Item List'},
     {key:'itemListsTask',name:'Item List',module:'Task Item List',optional:true},
     {key:'complaints',name:'complaints',module:'Complaint'},
-    {key:'execution',name:'azpExecutionRecords',module:'CRM / Execution'},
+    {key:'execution',name:'azpExecutionRecords',module:'CRM / Execution',fullRead:true},
     {key:'fleet',name:'azpFleetRecords',module:'Fleet / Vehicle Material',optional:true},
     {key:'taskMaster',name:'taskMaster',module:'Task',optional:true},
     {key:'staffTasks',name:'staffTasks',module:'Staff Task',optional:true},
+    {key:'azpStaffTasks',name:'azpStaffTasks',module:'Execution Staff Task Backup',optional:true},
     {key:'assignedTasks',name:'assignedStaffTasks',module:'Assigned Task',optional:true},
     {key:'crmTasks',name:'crmStaffTasks',module:'CRM Staff Task',optional:true},
     {key:'staff',name:'staffMaster',module:'Staff Master',optional:true}
@@ -14282,11 +14284,17 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
     let timer;
     return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+' timed out')),ms);})]).finally(()=>clearTimeout(timer));
   }
+  async function ensureLiveFirebaseAuth(){
+    const auth=getAuth(getApp());
+    if(auth.currentUser)return auth.currentUser;
+    return withTimeout(signInAnonymously(auth),10000,'Firebase authentication');
+  }
   async function readSource(db,source){
     const started=Date.now();
     try{
-      const snap=await withTimeout(getDocsFromServer(query(collection(db,source.name),limit(MAX_DOCS))),18000,source.name);
-      return {key:source.key,name:source.name,module:source.module,optional:Boolean(source.optional),ok:true,count:snap.size,truncated:snap.size>=MAX_DOCS,ms:Date.now()-started,rows:snap.docs.filter(x=>x.id!=='_setup').map(x=>({id:x.id,...x.data()}))};
+      const request=source.fullRead?collection(db,source.name):query(collection(db,source.name),limit(MAX_DOCS));
+      const snap=await withTimeout(getDocsFromServer(request),source.fullRead?30000:18000,source.name);
+      return {key:source.key,name:source.name,module:source.module,optional:Boolean(source.optional),ok:true,count:snap.size,truncated:!source.fullRead&&snap.size>=MAX_DOCS,ms:Date.now()-started,rows:snap.docs.filter(x=>x.id!=='_setup').map(x=>({id:x.id,...x.data()}))};
     }catch(error){
       const code=clip(error?.code||error?.message||'read-failed',90);
       return {key:source.key,name:source.name,module:source.module,optional:Boolean(source.optional),ok:false,count:0,truncated:false,ms:Date.now()-started,error:code,rows:[]};
@@ -14317,6 +14325,7 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
   })).filter(x=>x.id||x.ref||x.customer||x.mobile);}
   function normalizeTasks(rows){return rows.map(d=>({
     id:identity(d,d.id),ref:refNo(d,d.id),customer:customer(d),mobile:mobile(d),title:clip(pick(d,['task_title','title','task','name']),150),date:recordDate(d),due:dateOf(pick(d,['due_date','dueDate','follow_up_date','followUpDate'])),dueTime:clip(pick(d,['due_time','dueTime']),20),status:status(d),stage:clip(pick(d,['workflow_stage','workflowStage','stage','task_stage']),60),scheduledHold:Boolean(pick(d,['scheduled_hold','scheduledHold'],false)),priority:clip(pick(d,['priority','priorityName','customer_priority']),50),assigned:assigned(d),from:clip(pick(d,['from','from_location','fromLocation']),80),to:clip(pick(d,['to','to_location','toLocation']),80),module:clip(pick(d,['module','source','collection']),60)
+    ,updatedMs:rowTime(d),sourceName:clip(d._aiSource||'',40),sourceRank:number(d._aiSourceRank||0)
   })).filter(x=>x.id||x.title);}
   function normalizeCrm(rows){return rows.filter(d=>/^CRM_(LEAD|TASK)_/i.test(String(d.id||''))||/crm/i.test(clean(pick(d,['module','source','collection','type'])))).map(d=>({
     id:identity(d,d.id),ref:refNo(d,d.id),customer:customer(d),mobile:mobile(d),date:recordDate(d),due:dateOf(pick(d,['due_date','dueDate','follow_up_date','followUpDate'])),status:status(d),priority:clip(pick(d,['customer_priority','priorityName','priority']),50),assigned:assigned(d),from:clip(pick(d,['from','from_location','fromLocation']),80),to:clip(pick(d,['to','to_location','toLocation']),80),remarks:clip(pick(d,['remarks','notes','comments','comment']),130)
@@ -14324,12 +14333,24 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
   function normalizeGeneric(rows){return rows.map(d=>({id:identity(d,d.id),ref:refNo(d,d.id),customer:customer(d),mobile:mobile(d),date:recordDate(d),due:dateOf(pick(d,['next_follow_up_date','nextFollowUpDate','follow_up_date','followUpDate','due_date','dueDate'])),status:status(d),priority:clip(pick(d,['priority','customer_priority','priorityName']),50),assigned:assigned(d),sms:smsStatus(d)})).filter(x=>x.id||x.ref||x.customer||x.mobile);}
 
   const moduleOf=d=>clip(pick(d,['module','collection','subsystem','section','type'],''),70);
-  const rowTime=d=>number(pick(d,['updatedAtMs','createdAtMs','savedAtMs'],0))||Date.parse(String(pick(d,['updatedAtText','created_at','createdAtText','date'],'')||''))||0;
+  function rowTime(d){
+    const direct=number(pick(d,['updatedAtMs','updated_at_ms','createdAtMs','created_at_ms','savedAtMs'],0));if(direct)return direct;
+    for(const key of ['updatedAt','createdAt','savedAt','timestamp']){const v=d?.[key];try{if(typeof v?.toMillis==='function')return v.toMillis();if(typeof v?.seconds==='number')return v.seconds*1000;}catch(e){}}
+    return Date.parse(String(pick(d,['updatedAtText','updated_at','created_at','createdAtText','date'],'')||''))||0;
+  }
   function addDays(iso,days){const d=dateOf(iso);if(!d)return'';const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+Number(days||0));return x.toISOString().slice(0,10);}
+  function taskDueAtMs(t){
+    if(!t?.due)return 0;
+    let tm=clean(t.dueTime||'23:59').toUpperCase().replace(/\./g,'');
+    const mt=tm.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?$/);let hh=23,mm=59;
+    if(mt){hh=Number(mt[1]);mm=Number(mt[2]||0);if(mt[3]==='PM'&&hh<12)hh+=12;if(mt[3]==='AM'&&hh===12)hh=0;}
+    return Date.parse(`${t.due}T${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:00+05:30`)||0;
+  }
+  function isScheduledTask(t){return Boolean((t?.scheduledHold||/^scheduled$/i.test(clean(t?.status)))&&taskDueAtMs(t)>Date.now()+60000);}
   function workflowReport(tasks,today){
     const stageName=t=>clip(t.stage||'Stage Not Recorded',60);
     const todayRows=tasks.filter(t=>t.due===today);
-    const scheduled=tasks.filter(t=>t.scheduledHold||/scheduled/i.test(t.status));
+    const scheduled=tasks.filter(isScheduledTask);
     const cancelled=tasks.filter(t=>isLost(t.status));
     const completed=tasks.filter(t=>isDone(t.status));
     const active=tasks.filter(t=>!isDone(t.status)&&!isLost(t.status));
@@ -14338,9 +14359,9 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
     const owners=REPORT_OWNERS.map(rule=>{
       const rows=rule.allTasks?tasks:tasks.filter(t=>rule.stages.some(stage=>compact(stage)===compact(stageName(t))));
       const daily=rule.allTasks?todayRows:todayRows.filter(t=>rule.stages.some(stage=>compact(stage)===compact(stageName(t))));
-      return {reportOwner:rule.owner,scope:rule.scope,stages:rule.stages,allRecords:rows.length,today:daily.length,pending:rows.filter(t=>!isDone(t.status)&&!isLost(t.status)).length,scheduled:rows.filter(t=>t.scheduledHold||/scheduled/i.test(t.status)).length,cancelled:rows.filter(t=>isLost(t.status)).length,completed:rows.filter(t=>isDone(t.status)).length,todayRecords:take(daily.map(summarize))};
+      return {reportOwner:rule.owner,scope:rule.scope,stages:rule.stages,allRecords:rows.length,today:daily.length,pending:rows.filter(t=>(isPending(t.status)||!t.status)&&!isDone(t.status)&&!isLost(t.status)&&!isScheduledTask(t)).length,scheduled:rows.filter(isScheduledTask).length,cancelled:rows.filter(t=>isLost(t.status)).length,completed:rows.filter(t=>isDone(t.status)).length,todayRecords:take(daily.map(summarize))};
     });
-    return {totals:{all:tasks.length,active:active.length,completed:completed.length,scheduled:scheduled.length,cancelled:cancelled.length,today:todayRows.length,todayScheduled:todayRows.filter(t=>t.scheduledHold||/scheduled/i.test(t.status)).length,todayCancelled:todayRows.filter(t=>isLost(t.status)).length,todayCompleted:todayRows.filter(t=>isDone(t.status)).length,todayPending:todayRows.filter(t=>!isDone(t.status)&&!isLost(t.status)&&!/scheduled/i.test(t.status)).length},stageCounts,reportOwnership:owners,todayRecords:take(todayRows.map(summarize)),scheduledRecords:take(scheduled.map(summarize)),cancelledRecords:take(cancelled.map(summarize))};
+    return {totals:{all:tasks.length,active:active.filter(t=>(isPending(t.status)||!t.status)&&!isScheduledTask(t)).length,completed:completed.length,scheduled:scheduled.length,cancelled:cancelled.length,today:todayRows.length,todayScheduled:todayRows.filter(isScheduledTask).length,todayCancelled:todayRows.filter(t=>isLost(t.status)).length,todayCompleted:todayRows.filter(t=>isDone(t.status)).length,todayPending:todayRows.filter(t=>(isPending(t.status)||!t.status)&&!isDone(t.status)&&!isLost(t.status)&&!isScheduledTask(t)).length},stageCounts,reportOwnership:owners,todayRecords:take(todayRows.map(summarize)),scheduledRecords:take(scheduled.map(summarize)),cancelledRecords:take(cancelled.map(summarize))};
   }
   function materialValue(row,aliases){for(const key of aliases){const value=number(row?.[key]);if(value)return value;}return 0;}
   function materialStockReport(executionRows){
@@ -14358,11 +14379,22 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
     return {formula:'Available = Opening + Purchase - Manual Used - Job Issues',stockRecordCount:stockRows.length,issueRecordCount:issueRows.length,totalAvailableValue:Number(items.reduce((a,x)=>a+x.availableValue,0).toFixed(2)),items,alerts:items.filter(x=>x.status!=='Available'||x.shortage>0)};
   }
   function foodingReport(executionRows,today){
-    const rows=executionRows.filter(r=>{const m=compact(moduleOf(r));return m==='foodingcycle'||m==='fooding'&&/fooding payment reminder/i.test(clean(r.status));});
+    const rows=executionRows.filter(r=>{const m=compact(moduleOf(r)),role=compact(pick(r,['role','staff_role','staffRole'],''));return m.includes('foodingcycle')&&(!role||role==='driver'||role==='worker');});
     const latest=new Map();rows.forEach(r=>{const name=clip(pick(r,['staff_name','staffName','employee_name','driver_name','worker_name','name']),70);const key=compact(name);if(!key)return;const old=latest.get(key);const start=dateOf(pick(r,['cycle_start_date','cycleStartDate','fooding_cycle_start_date','foodingStartDate','last_paid_date','date']));if(!old||start>old.start||(start===old.start&&rowTime(r)>rowTime(old.row)))latest.set(key,{row:r,name,start});});
-    const normalized=[...latest.values()].map(x=>{const r=x.row,days=Math.max(number(pick(r,['total_days','cycle_days','totalDays'],4))||4,1),due=x.start?addDays(x.start,days-1):dateOf(pick(r,['cycle_end_date','cycleEndDate','next_due_date','nextDueDate'])),rate=number(pick(r,['daily_rate','per_day_fooding'],0)),explicit=number(pick(r,['due_amount','amount'],0)),amount=explicit||(rate?rate*days:0),payment=clip(pick(r,['payment_status','paymentStatus','status'],'Pending'),40);return {staff:x.name,role:clip(pick(r,['role','staff_role','staffRole']),30),cycleStart:x.start,totalDays:days,dueDate:due,dailyRate:rate||null,dueAmount:amount||null,paymentStatus:payment,status:isDone(payment)?'Paid':!due?'Due date missing':due<today?'Overdue':due===today?'Due Today':'Upcoming'};});
+    const attendance=executionRows.filter(r=>['attendance','leaveapproval'].includes(compact(moduleOf(r))));
+    const presentToday=name=>{
+      const key=compact(name),matches=attendance.filter(r=>compact(pick(r,['employee_name','staff_name','driver_name','worker_name','name']))===key).filter(r=>{
+        const from=dateOf(pick(r,['leave_from','leave_from_date','leaveFrom','date'])),to=dateOf(pick(r,['leave_to','leave_to_date','leaveTo','date']))||from;
+        return from&&from<=today&&today<=(to||from)&&!/reject/i.test(clean(pick(r,['company_approval','approval_status'])));
+      }).sort((a,b)=>rowTime(a)-rowTime(b));
+      if(!matches.length)return true;
+      const st=compact(pick(matches[matches.length-1],['attendance_status','attendanceStatus','status','approval_status','approvalStatus']));
+      return !(st==='absent'||st==='leave'||st.includes('absent')||st.includes('leave'));
+    };
+    const normalized=[...latest.values()].map(x=>{const r=x.row,days=Math.max(number(pick(r,['total_days','cycle_days','totalDays'],4))||4,1),due=x.start?addDays(x.start,days-1):dateOf(pick(r,['cycle_end_date','cycleEndDate','next_due_date','nextDueDate'])),rate=number(pick(r,['daily_rate','per_day_fooding'],0)),explicit=number(pick(r,['due_amount','amount'],0)),amount=explicit||(rate?rate*days:0),payment=clip(pick(r,['payment_status','paymentStatus','status'],'Pending'),40);return {staff:x.name,role:clip(pick(r,['role','staff_role','staffRole']),30),cycleStart:x.start,totalDays:days,dueDate:due,dailyRate:rate||null,dueAmount:amount||null,paymentStatus:payment,presentToday:presentToday(x.name),status:isDone(payment)?'Paid':!due?'Due date missing':due<today?'Overdue':due===today?'Due Today':'Upcoming'};});
     const pending=normalized.filter(x=>!isDone(x.paymentStatus));
-    return {recordCount:rows.length,latestStaffCycles:normalized.length,dueToday:pending.filter(x=>x.dueDate===today),overdue:pending.filter(x=>x.dueDate&&x.dueDate<today),upcoming:take(pending.filter(x=>x.dueDate>today).sort((a,b)=>a.dueDate.localeCompare(b.dueDate))),dueTodayTotal:pending.filter(x=>x.dueDate===today).reduce((a,x)=>a+number(x.dueAmount),0),missingFields:normalized.filter(x=>!x.role||!x.dueDate||x.dueAmount===null).map(x=>({staff:x.staff,missing:[!x.role?'role':'',!x.dueDate?'due date':'',x.dueAmount===null?'due amount/rate':''].filter(Boolean)}))};
+    const dueToday=pending.filter(x=>x.dueDate===today&&x.presentToday);
+    return {recordCount:rows.length,latestStaffCycles:normalized.length,dueToday,absentExcludedToday:pending.filter(x=>x.dueDate===today&&!x.presentToday).map(x=>({staff:x.staff,role:x.role,dueDate:x.dueDate})),overdue:pending.filter(x=>x.dueDate&&x.dueDate<today),upcoming:take(pending.filter(x=>x.dueDate>today).sort((a,b)=>a.dueDate.localeCompare(b.dueDate))),dueTodayTotal:dueToday.reduce((a,x)=>a+number(x.dueAmount),0),missingFields:normalized.filter(x=>!x.role||!x.dueDate||x.dueAmount===null).map(x=>({staff:x.staff,missing:[!x.role?'role':'',!x.dueDate?'due date':'',x.dueAmount===null?'due amount/rate':''].filter(Boolean)}))};
   }
   function executionJobReport(executionRows,today){
     const jobs=executionRows.filter(r=>compact(moduleOf(r))==='jobs').map(r=>({reference:clip(pick(r,['job_id','planning_no','id']),80),customer:customer(r),mobile:mobile(r),date:dateOf(pick(r,['work_date','work_start_date','shifting_date','date'])),status:clip(pick(r,['status','job_status','work_status'],'Not recorded'),50),driver:clip(pick(r,['driver','driver_name','team_leader']),70),workers:clip(pick(r,['workers_name','workers','worker_1']),100),vehicle:clip(pick(r,['vehicle_number','vehicle_type']),70),from:clip(pick(r,['from_location','from']),70),to:clip(pick(r,['to_location','to']),70),total:number(pick(r,['total_amount','total_price'])),advance:number(pick(r,['advance_received','advance_price']))}));
@@ -14378,6 +14410,15 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
   }
 
   function taskKey(t){return t.id||compact([t.title,t.assigned,t.due,t.customer,t.mobile].join('|'));}
+  function latestTaskRows(rows){
+    const map=new Map();
+    rows.forEach(t=>{
+      const key=taskKey(t);if(!key)return;
+      const old=map.get(key);
+      if(!old||number(t.updatedMs)>number(old.updatedMs)||(number(t.updatedMs)===number(old.updatedMs)&&number(t.sourceRank)>number(old.sourceRank)))map.set(key,t);
+    });
+    return [...map.values()];
+  }
   function personMatches(value,name){
     const a=compact(value),b=compact(name);if(!a||!b)return false;
     if(a.includes(b)||b.includes(a))return true;
@@ -14388,12 +14429,15 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
   }
   function staffReport(name,groups,today){
     const own=rows=>rows.filter(x=>personMatches(x.assigned,name));
-    const tasks=own(groups.tasks),quotes=own(groups.quotes),plans=own(groups.plans),agreements=own(groups.agreements),crm=own(groups.crm);
-    const completed=tasks.filter(x=>isDone(x.status)).length;
-    const pending=tasks.filter(x=>!isDone(x.status)&&!isLost(x.status)).length;
-    const overdue=tasks.filter(x=>x.due&&x.due<today&&!isDone(x.status)&&!isLost(x.status)).length;
-    const score=tasks.length?clamp(Math.round((completed/tasks.length)*100-overdue*6),0,100):null;
-    return {name,quotations:quotes.length,quotationPending:quotes.filter(x=>isPending(x.status)||!x.status).length,planning:plans.length,agreements:agreements.length,crmLeads:crm.length,tasks:tasks.length,completed,pending,overdue,performanceScore:score,scoreBasis:score===null?'No assigned live tasks found':'Task completion rate minus overdue-task penalty'};
+    const rule=REPORT_OWNERS.find(x=>personMatches(x.owner,name));
+    const assignedTasks=own(groups.tasks),quotes=own(groups.quotes),plans=own(groups.plans),agreements=own(groups.agreements),crm=own(groups.crm);
+    const responsibilityTasks=rule?groups.tasks.filter(t=>rule.stages.some(stage=>compact(stage)===compact(t.stage||''))):assignedTasks;
+    const completed=responsibilityTasks.filter(x=>isDone(x.status)).length;
+    const pending=responsibilityTasks.filter(x=>(isPending(x.status)||!x.status)&&!isDone(x.status)&&!isLost(x.status)&&!isScheduledTask(x)).length;
+    const scheduled=responsibilityTasks.filter(isScheduledTask).length;
+    const overdue=responsibilityTasks.filter(x=>x.due&&x.due<today&&!isDone(x.status)&&!isLost(x.status)&&!isScheduledTask(x)).length;
+    const score=responsibilityTasks.length?clamp(Math.round((completed/responsibilityTasks.length)*100-overdue*6),0,100):null;
+    return {name,responsibilityScope:rule?.scope||'Assigned tasks',responsibilityStages:rule?.stages||[],allTasksMonitored:rule?.allTasks?groups.tasks.length:null,responsibilityTasks:responsibilityTasks.length,assignedTasks:assignedTasks.length,quotations:quotes.length,quotationPending:quotes.filter(x=>isPending(x.status)||!x.status).length,planning:plans.length,agreements:agreements.length,crmLeads:crm.length,tasks:responsibilityTasks.length,completed,pending,scheduled,overdue,performanceScore:score,scoreBasis:score===null?'No live task exists in this responsibility scope':'Responsibility-stage completion rate minus overdue-task penalty'};
   }
   function sameCustomer(a,b){
     if(a.mobile&&b.mobile&&a.mobile===b.mobile)return true;
@@ -14412,9 +14456,17 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
     const sales=normalizeSales(sourceMap.sales||[]);
     const plans=uniq(normalizePlans([...(sourceMap.planning||[]),...(sourceMap.planningLegacy||[])]),x=>x.id||compact([x.ref,x.customer,x.date].join('|')));
     const agreements=normalizeAgreements(sourceMap.agreements||[]);
-    const executionTasks=(sourceMap.execution||[]).filter(d=>/^CRM_TASK_/i.test(String(d.id||''))||/task/i.test(clean(pick(d,['module','collection','type'])))||clean(pick(d,['task_title','taskTitle','title'])));
-    const taskRows=[...(sourceMap.taskMaster||[]),...(sourceMap.staffTasks||[]),...(sourceMap.assignedTasks||[]),...(sourceMap.crmTasks||[]),...executionTasks];
-    const tasks=uniq(normalizeTasks(taskRows),taskKey);
+    const looksExecutionTask=d=>{
+      const id=String(d.id||''),mod=compact(pick(d,['module','collection','type'],''));
+      if(/^(AZP_STAFF_CONTROL_|CRM_LEAD_|AZP_ADMIN_COMMAND_)/i.test(id)||['staffcontrol','staffmaster','crmlead'].includes(mod))return false;
+      const title=clean(pick(d,['task_title','taskTitle','title','task','name']));
+      const hasAssignment=clean(pick(d,['assigned_staff','staffName','assignedStaff','assignedTo','assignTo','targetStaffName','staff_name','assign_role','staffRole']));
+      return mod==='taskmanagement'||d.staffAppVisible===true||d.showInStaffApp===true||d.visibleToStaff===true||Boolean(title&&hasAssignment);
+    };
+    const executionTasks=(sourceMap.execution||[]).filter(looksExecutionTask);
+    const tag=(rows,sourceName,sourceRank)=>(rows||[]).map(d=>({...d,_aiSource:sourceName,_aiSourceRank:sourceRank}));
+    const taskRows=[...tag(sourceMap.taskMaster,'taskMaster',40),...tag(sourceMap.staffTasks,'staffTasks',30),...tag(sourceMap.azpStaffTasks,'azpStaffTasks',35),...tag(sourceMap.assignedTasks,'assignedStaffTasks',20),...tag(sourceMap.crmTasks,'crmStaffTasks',10),...tag(executionTasks,'azpExecutionRecords',50)];
+    const tasks=latestTaskRows(normalizeTasks(taskRows));
     const crm=uniq(normalizeCrm(sourceMap.execution||[]).sort((a,b)=>String(a.id).includes('CRM_LEAD_')?-1:String(b.id).includes('CRM_LEAD_')?1:0),x=>x.mobile||compact([x.customer,x.date].join('|'))||x.id);
     const items=normalizeGeneric([...(sourceMap.itemLists||[]),...(sourceMap.itemListsTask||[])]);
     const complaints=normalizeGeneric(sourceMap.complaints||[]);
@@ -14485,9 +14537,11 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
 
     return {
       meta:{project:'A TO Z PACKERS & MOVERS',role:'AI Business Director',phase:'Phase 1',query:queryText,timezone:'Asia/Kolkata',today,generatedAt:new Date().toISOString(),health,dataPolicy:'Live Firestore read-only snapshot; reusable in memory for up to 2 minutes unless Refresh is pressed',partialData:sourceFailures.length>0,truncatedData:truncated.length>0},
-      definitions:{todayRevenue:'Sum of total_amount for sales/invoices dated today; this is recorded invoice value, not proof of cash received today.',todayRecordedCollection:'Sum of received_amount on sales records dated today; event-level payment timestamps may be unavailable.',pendingRevenue:'Sum of explicit balance_due, or total_amount minus received_amount when balance is absent.',pending90:'Sales records where received_amount is below 90% of total_amount.',pendingFinal:'Sales records where received_amount is at least 90% but below total_amount.',pickupsAndDeliveries:'Today jobs/pickups use planning work_start_date. Today deliveries count only records with an explicit delivery, unload or completed status; blank statuses remain unknown.',taskReportOwnership:'Sanju Ma’am monitors All Tasks plus New Lead and Item List; Ranjit Sarkar owns the Advance-stage report; Swagatika owns Quotation-status and Planning-stage reports.',materialStock:'Execution formula: Available = Opening + Purchase - Manual Used - Job Issues. Missing stock rows are not treated as zero stock.',fooding:'Latest fooding cycle per driver/worker; due date is cycle start plus total days minus one, matching the Execution/Staff software logic.',conversion:'Quotation cohort dated that day with a linked sales record by quotation reference.',performanceScore:'Assigned task completion percentage minus six points per overdue task. Unavailable when no assigned task exists.',missingDocuments:'Detected only by matching reference, mobile, or exact normalized customer name; unmatched data should be verified.'},
+      definitions:{todayRevenue:'Sum of total_amount for sales/invoices dated today; this is recorded invoice value, not proof of cash received today.',todayRecordedCollection:'Sum of received_amount on sales records dated today; event-level payment timestamps may be unavailable.',pendingRevenue:'Sum of explicit balance_due, or total_amount minus received_amount when balance is absent.',pending90:'Sales records where received_amount is below 90% of total_amount.',pendingFinal:'Sales records where received_amount is at least 90% but below total_amount.',pickupsAndDeliveries:'Today jobs/pickups use planning work_start_date. Today deliveries count only records with an explicit delivery, unload or completed status; blank statuses remain unknown.',taskReportOwnership:'Sanju Ma’am monitors All Tasks plus New Lead and Item List; Ranjit Sarkar owns the Advance-stage report; Swagatika owns Quotation-status and Planning-stage reports.',materialStock:'Execution formula: Available = Opening + Purchase - Manual Used - Job Issues. Missing stock rows are not treated as zero stock.',fooding:'Latest foodingCycle record per driver/worker; due date is cycle start plus total days minus one and absent staff are excluded from today, exactly matching the Staff software today-fooding report.',conversion:'Quotation cohort dated that day with a linked sales record by quotation reference.',performanceScore:'Responsibility-stage completion percentage minus six points per overdue task. Assigned-task counts are kept separate.',missingDocuments:'Detected only by matching reference, mobile, or exact normalized customer name; unmatched data should be verified.'},
       metrics:{businessHealth:health,quotationsToday:todayQuotes.length,quotationsYesterday:yesterdayQuotes.length,quotationPending:quotes.filter(x=>isPending(x.status)).length,quotationUnknownStatus:quotes.filter(x=>!x.status).length,todayJobs:todayPlans.length,executionJobsToday:executionJobs.today,todayPickups:todayPlans.length,todayDeliveries:todayPlans.filter(x=>/deliver|unload|complete/i.test(x.status)).length,todayDeliveryUnknownStatus:todayPlans.filter(x=>!x.status).length,todayInvoiceValue:todaySales.reduce((s,x)=>s+x.total,0),todayRecordedCollection:todaySales.reduce((s,x)=>s+x.received,0),pendingRevenue,pending90Count:pending90.length,pendingFinalCount:pendingFinal.length,pendingPlanningCount:missingPlanning.length,pendingAgreementCount:missingAgreement.length,pendingItemListCount:pendingItemLists.length,followupDueCount:uniq([...explicitFollowups,...followupDueTasks],x=>x.mobile||x.id).length,followupCompletionRate:followupRate,overdueTaskCount:overdueTasks.length,dueTodayTaskCount:dueTodayTasks.length,todayTaskScheduled:taskWorkflow.totals.todayScheduled,todayTaskCancelled:taskWorkflow.totals.todayCancelled,todayTaskCompleted:taskWorkflow.totals.todayCompleted,todayTaskPending:taskWorkflow.totals.todayPending,highPriorityCount:highPriority.length,lostLeadCount:lostLeads.length,openComplaintCount:openComplaints.length,smsProblemCount:smsProblems.length,unassignedDriverCount:unassignedDrivers.length,materialStockAlerts:materialStock.alerts.length,foodingDueToday:fooding.dueToday.length,foodingOverdue:fooding.overdue.length,todayConversion:cohortConversion(quotes,sales,today),yesterdayConversion:cohortConversion(quotes,sales,yesterday)},
       priorityLists:{pending90:take(pending90.map(x=>listCustomer({...x,amount:x.total-x.received,reason:`Received ${money(x.received)} of ${money(x.total)}`}))),pendingFinal:take(pendingFinal.map(x=>listCustomer({...x,amount:x.balance,reason:`Final balance ${money(x.balance)}`}))),followupDue:take(uniq([...explicitFollowups,...followupDueTasks.map(x=>({...x,reason:'Follow-up task due: '+x.title}))],x=>x.mobile||x.id).map(listCustomer)),overdueTasks:take(overdueTasks.map(x=>listCustomer({...x,reason:'Overdue task: '+x.title}))),highPriority:take(highPriority.map(listCustomer)),lostLeads:take(lostLeads.map(x=>listCustomer({...x,reason:'CRM stage: '+x.status}))),waitingTooLong:take(waitingTooLong.map(listCustomer)),pendingItemLists:take(pendingItemLists.map(listCustomer)),missingPlanning:take(missingPlanning.map(listCustomer)),missingAgreements:take(missingAgreement.map(listCustomer)),smsProblems:take(smsProblems.map(listCustomer)),unassignedDrivers:take(unassignedDrivers.map(listCustomer)),openComplaints:take(openComplaints.map(listCustomer))},
+      quotationReport:{todayCount:todayQuotes.length,pendingCount:quotes.filter(x=>isPending(x.status)).length,unknownStatusCount:quotes.filter(x=>!x.status).length,todayRecords:take(todayQuotes.map(x=>listCustomer({...x,amount:x.total,reason:'Quotation created/dated today'}))),pendingRecords:take(quotes.filter(x=>isPending(x.status)).map(x=>listCustomer({...x,amount:x.total,reason:'Quotation status: '+(x.status||'Not recorded')})))},
+      documentReport:{pendingPlanningCount:missingPlanning.length,pendingAgreementCount:missingAgreement.length,pendingItemListCount:pendingItemLists.length,pendingPlanning:take(missingPlanning.map(listCustomer)),pendingAgreements:take(missingAgreement.map(listCustomer)),pendingItemLists:take(pendingItemLists.map(listCustomer))},
       todayOperations:{jobs:take(todayPlans.map(x=>({customer:x.customer||'-',mobile:x.mobile,reference:x.ref,routeStatus:x.status||'Not recorded',amount:x.amount,driver:x.driver||'',driverMobile:x.driverMobile||'',vehicle:x.vehicle||'',smsStatus:x.sms||'Not recorded'}))),drivers:take(driverStatus)},
       staffPerformance:staff,
       staffWorkflowReports:taskWorkflow,
@@ -14528,7 +14582,7 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
       const f=e.fooding||{},due=f.dueToday||[],overdue=f.overdue||[];
       out.push(`OWNER ANSWER\nToday's Fooding Report — ${snapshot.meta.today}`);
       if(!f.recordCount)out.push(`I don't have enough live information. No live fooding-cycle record is available.`);
-      else out.push(`Due Today: ${due.length} person(s) · Total Due: ${money(f.dueTodayTotal||0)}\nOverdue: ${overdue.length} person(s)\nLatest Staff Cycles Found: ${f.latestStaffCycles||0}`);
+      else out.push(`Due Today: ${due.length} person(s) · Total Due: ${money(f.dueTodayTotal||0)}\nAbsent Excluded Today: ${f.absentExcludedToday?.length||0} person(s)\nOverdue: ${overdue.length} person(s)\nLatest Staff Cycles Found: ${f.latestStaffCycles||0}`);
       out.push(`\nDUE TODAY\n${reportList(due,x=>`${x.staff||'Name missing'} · ${x.role||'Role missing'} · ${x.dueAmount===null?'Amount/rate missing':money(x.dueAmount)} · Due ${x.dueDate||'date missing'}`,'No pending fooding cycle is due today according to the available live records.')}`);
       if(overdue.length)out.push(`\nOVERDUE FOODING\n${reportList(overdue,x=>`${x.staff||'Name missing'} · ${x.role||'Role missing'} · ${x.dueAmount===null?'Amount/rate missing':money(x.dueAmount)} · Due ${x.dueDate||'date missing'}`,'')}`);
       out.push(`\nBUSINESS ANALYSIS\n${overdue.length?`${overdue.length} fooding cycle(s) need immediate verification/payment.`:'No overdue fooding cycle detected in the available latest cycles.'}${f.missingFields?.length?` ${f.missingFields.length} record(s) have missing role, date or amount/rate.`:''}`);
@@ -14541,7 +14595,11 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
       out.push(`Formula: ${stock.formula||'Available = Opening + Purchase - Manual Used - Job Issues'}\nStock Records: ${stock.stockRecordCount||0} · Issue Records: ${stock.issueRecordCount||0} · Alerts: ${alerts.length} · Available Value: ${money(stock.totalAvailableValue||0)}`);
       out.push(`\nCURRENT STOCK\n${reportList(items,x=>`${x.item} · Available ${x.available} ${x.unit||''} · ${x.status}${x.reorderLevel?` · Reorder ${x.reorderLevel}`:''}`,'No material item could be calculated from the available live records.')}`);
       out.push(`\nACTION PRIORITIES\n${alerts.length?'1. Reconcile shortage records and replenish low-stock items.':'1. No low-stock exception detected.'}`);
-    }else if(/task|staff|swagat|ranjit|sarkar|sanju|schedule|cancel|pending work/.test(q)){
+    }else if(/quotation|quote/.test(q)&&!/task|staff|swagat|ranjit|sarkar|sanju/.test(q)){
+      const qr=snapshot.quotationReport||{},rows=/pending|open|status/.test(q)?qr.pendingRecords:qr.todayRecords;
+      out.push(`OWNER ANSWER\nQuotation Report — ${snapshot.meta.today}\nCreated Today: ${qr.todayCount||0}\nPending: ${qr.pendingCount||0}\nStatus Missing: ${qr.unknownStatusCount||0}`);
+      out.push(`\n${/pending|open|status/.test(q)?'PENDING QUOTATIONS':'TODAY QUOTATIONS'}\n${reportList(rows,customerReportLine,/pending|open|status/.test(q)?'No pending quotation detected.':'No quotation dated today was found.')}`);
+    }else if(/task|staff|swagat|ranjit|sarkar|sanju|schedule|cancel|pending work|advance stage|advance-stage/.test(q)){
       let owners=w.reportOwnership||[];
       if(/swagat/.test(q))owners=owners.filter(x=>/swagat/i.test(x.reportOwner));else if(/ranjit|sarkar/.test(q))owners=owners.filter(x=>/ranjit|sarkar/i.test(x.reportOwner));else if(/sanju/.test(q))owners=owners.filter(x=>/sanju/i.test(x.reportOwner));
       out.push(`OWNER ANSWER\nStaff Workflow Report — ${snapshot.meta.today}\nAll Tasks: ${w.totals?.all||0} · Today: ${w.totals?.today||0} · Scheduled: ${m.todayTaskScheduled} · Cancelled: ${m.todayTaskCancelled} · Completed: ${m.todayTaskCompleted} · Pending: ${m.todayTaskPending}`);
@@ -14572,6 +14630,7 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
     out.push(`\nDATA LIMITATIONS\n${liveLimitations(snapshot)}`);
     return out.join('\n');
   }
+  function needsAdvisoryAi(queryText){return /suggest|improv|recommend|analy(?:sis|se|ze)|what is missing|kya missing|risk|consult/i.test(clean(queryText));}
   function legacyDirectorPrompt(snapshot){
     return `You are the OWNER'S AI BUSINESS DIRECTOR for A TO Z PACKERS & MOVERS. Think like a senior operations, sales, CRM and dispatch manager.\n\nNON-NEGOTIABLE RULES:\n1. Use ONLY the supplied live Firestore snapshot. Never invent or assume a customer, amount, status, staff result, date, rate, trend, payment, SMS delivery, driver assignment or business fact.\n2. If required information or a required collection is unavailable, say exactly: \"I don't have enough live information.\" Then state which live field or module is missing.\n3. Respect every metric definition in the snapshot. Do not relabel invoice value as cash revenue.\n4. Answer the owner's exact question first. Use the same language style as the owner's question (English, Hindi/Hinglish, or Odia).\n5. Follow the owner's report-responsibility rules exactly: Sanju Ma'am = All Tasks plus New Lead/Item List; Ranjit Sarkar = Advance stage; Swagatika = Quotation status plus Planning stage. Actual assigned-staff fields remain separate evidence and must not be changed.\n6. Include customer/reference details only when present. Never expose internal database implementation details unless explaining unavailable data.\n7. Recommendations are advisory only. Do not claim that you called, messaged, assigned, saved, sent, paid, changed, or completed anything.\n8. Do not say Firebase, SMS, Maps, OpenAI, CRM, PDF, invoice, analytics or ads are \"working\" unless the supplied snapshot directly proves that exact function. A collection read proves data availability only.\n\nRESPONSE FORMAT:\nOWNER ANSWER\n- Direct answer with exact live numbers/list.\n\nSTAFF / EXECUTION REPORT\n- Include the relevant daily task owner, scheduled/cancelled/completed/pending records, material stock, fooding, driver/worker, payment or other operational evidence requested. Omit unrelated modules.\n\nBUSINESS ANALYSIS\n- Evidence-backed observations and comparisons. Omit unsupported comparisons.\n\nAI SUGGESTIONS — MISSING & IMPROVEMENT\n- Use dataQualityGaps and operationalExceptions only. Separate missing data from process improvements.\n\nACTION PRIORITIES\n1. Priority 1 — immediate action\n2. Priority 2 — next action\n3. Priority 3 — follow-up action\nUse fewer priorities if the data does not support five.\n\nWHATSAPP-READY SUMMARY\n- End with a concise professional summary that can be forwarded. Do not claim it was sent.\n\nDATA LIMITATIONS\n- State partial, missing, truncated, unknown-status, or matching limitations. If none, say \"No source limitation reported in this snapshot.\"\n\nLIVE FIRESTORE SNAPSHOT:\n${JSON.stringify(snapshot)}`;
   }
@@ -14653,6 +14712,7 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
   }
   async function loadLive(queryText){
     const app=getApp(),db=getFirestore(app);
+    await ensureLiveFirebaseAuth();
     const results=await Promise.all(SOURCES.map(source=>readSource(db,source)));
     const sourceMap=Object.fromEntries(results.map(x=>[x.key,x.rows]));
     lastSnapshot={sources:results,sourceMap,loadedAt:new Date().toISOString()};
@@ -14674,6 +14734,11 @@ import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/
       renderSnapshot(snapshot);setOutput(deterministicDirectorReport(snapshot,queryText));
       const successful=lastSnapshot.sources.filter(x=>x.ok).length;
       if(!successful){setStatus("I don't have enough live information. No business collection could be read.",'error');return;}
+      if(!needsAdvisoryAi(queryText)){
+        const failed=lastSnapshot.sources.filter(x=>!x.ok).length;
+        setStatus(failed?`Exact live report completed with ${failed} unavailable source(s). See Data Limitations.`:'Exact live report completed from the latest Firebase records.','success');
+        return;
+      }
       setStatus('Live snapshot ready. AI Business Director is preparing the owner report…','loading');
       if(!callable)callable=httpsCallable(getFunctions(getApp(),'asia-south1'),'aiAssistant');
       const result=await withTimeout(callable({prompt:directorPrompt(snapshot)}),55000,'AI Business Director');
