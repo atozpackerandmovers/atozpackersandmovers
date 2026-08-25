@@ -2486,7 +2486,23 @@
       if(queryDigits.length>=3&&textDigits.includes(queryDigits))return true;
       return tokens.every(token=>text.includes(token));
     }
-    window.azpRenderPlanningNow=()=>renderList('jobs');
+    function azpPlanningResultsHtml(rows,mod,totalRows){
+      return rows.length?rows.map(r=>{const eta=azpExecutionEtaHtml(r);return `<div class="record-card bg-white rounded-lg border p-3 flex items-center justify-between gap-3"><div class="min-w-0"><div>${recordLine(r,mod.fields.slice(0,4))}</div>${eta}</div><div class="record-actions flex gap-1"><button onclick="window._edit('${r.id}')" class="px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs">Edit</button><button onclick="window._del('${r.id}')" class="px-3 py-2 rounded-lg bg-red-50 text-red-700 font-bold text-xs">Delete</button></div></div>`}).join(''):`<div class="bg-white border rounded-2xl p-8 text-center text-slate-500 font-bold">${totalRows?'No Planning Sheet found for this Driver, Party Mobile or District.':'No Planning Sheet record loaded yet.'}</div>`;
+    }
+    window.azpPlanningApplySearch=value=>{
+      window.azpPlanningSearchText=String(value||'');
+      const results=document.getElementById('azp-planning-results'),mod=modules.jobs;
+      if(!results||!mod)return;
+      const allRows=allData.filter(r=>r.module==='jobs'||r.collection===mod.collection);
+      const rows=allRows.filter(r=>azpPlanningSearchMatch(r,window.azpPlanningSearchText)).sort(azpPlanningSort);
+      results.innerHTML=azpPlanningResultsHtml(rows,mod,allRows.length);
+    };
+    window.azpPlanningClearSearch=()=>{
+      const input=document.getElementById('azp-planning-search');
+      if(input)input.value='';
+      window.azpPlanningApplySearch('');
+      input?.focus();
+    };
 
     function renderList(key){
       const mod=modules[key]; if(!mod.collection)return;
@@ -2510,15 +2526,17 @@
 
       if(key==='jobs'){
         const existingSearch=document.getElementById('azp-planning-search');
-        const wasFocused=document.activeElement && document.activeElement.id==='azp-planning-search';
-        const oldCaret=wasFocused?(existingSearch?.selectionStart||0):0;
         const q=window.azpPlanningSearchText ?? (existingSearch?.value||'');
         const allRows=allData.filter(r=>r.module==='jobs'||r.collection===mod.collection);
         const rows=allRows.filter(r=>azpPlanningSearchMatch(r,q)).sort(azpPlanningSort);
-        const searchPanel=`<div class="azp-planning-search-panel"><p class="azp-planning-search-title">🔎 SEARCH PLANNING SHEET</p><div class="azp-task-search-wrap"><input id="azp-planning-search" class="azp-task-search" type="search" inputmode="search" autocomplete="off" placeholder="Driver Name / Party Mobile / District" aria-label="Search planning by driver name, party mobile or district" value="${azpEsc(q)}" oninput="window.azpPlanningSearchText=this.value;window.azpRenderPlanningNow()"><button type="button" class="azp-task-search-clear" aria-label="Clear planning search" onclick="window.azpPlanningSearchText='';window.azpRenderPlanningNow()">×</button></div><p class="azp-planning-search-help">Driver का नाम, Party का मोबाइल नंबर या District लिखकर search करें।</p></div>`;
+        const existingResults=document.getElementById('azp-planning-results');
         empty?.classList.add('hidden');
-        list.innerHTML=searchPanel+(rows.length?rows.map(r=>{const eta=azpExecutionEtaHtml(r);return `<div class="record-card bg-white rounded-lg border p-3 flex items-center justify-between gap-3"><div class="min-w-0"><div>${recordLine(r,mod.fields.slice(0,4))}</div>${eta}</div><div class="record-actions flex gap-1"><button onclick="window._edit('${r.id}')" class="px-3 py-2 rounded-lg bg-blue-50 text-blue-700 font-bold text-xs">Edit</button><button onclick="window._del('${r.id}')" class="px-3 py-2 rounded-lg bg-red-50 text-red-700 font-bold text-xs">Delete</button></div></div>`}).join(''):`<div class="bg-white border rounded-2xl p-8 text-center text-slate-500 font-bold">${allRows.length?'No Planning Sheet found for this Driver, Party Mobile or District.':'No Planning Sheet record loaded yet.'}</div>`);
-        if(wasFocused){setTimeout(()=>{const ne=document.getElementById('azp-planning-search');if(ne){ne.focus();try{ne.setSelectionRange(oldCaret,oldCaret)}catch(_e){}}},0)}
+        if(existingSearch&&existingResults){
+          existingResults.innerHTML=azpPlanningResultsHtml(rows,mod,allRows.length);
+          return;
+        }
+        const searchPanel=`<div class="azp-planning-search-panel"><p class="azp-planning-search-title">🔎 SEARCH PLANNING SHEET</p><div class="azp-task-search-wrap"><input id="azp-planning-search" class="azp-task-search" type="search" inputmode="search" autocomplete="off" placeholder="Driver Name / Party Mobile / District" aria-label="Search planning by driver name, party mobile or district" value="${azpEsc(q)}" oninput="window.azpPlanningApplySearch(this.value)"><button type="button" class="azp-task-search-clear" aria-label="Clear planning search" onclick="window.azpPlanningClearSearch()">×</button></div><p class="azp-planning-search-help">Driver का नाम, Party का मोबाइल नंबर या District लिखकर search करें।</p></div>`;
+        list.innerHTML=searchPanel+`<div id="azp-planning-results">${azpPlanningResultsHtml(rows,mod,allRows.length)}</div>`;
         return;
       }
 
