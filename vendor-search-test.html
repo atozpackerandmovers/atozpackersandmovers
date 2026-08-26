@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <title>A TO Z Vendor Search — Testing</title>
+  <style>
+    :root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#142033;background:#f4f7fb}
+    *{box-sizing:border-box}body{margin:0}.shell{max-width:760px;margin:auto;padding:18px 14px 42px}
+    .hero{background:linear-gradient(135deg,#071a36,#0b5e9a);color:#fff;border-radius:24px;padding:24px;box-shadow:0 16px 40px #102a4d26}
+    .hero h1{margin:0 0 8px;font-size:26px}.hero p{margin:0;color:#dbeafe;line-height:1.5}.badge{display:inline-block;margin-top:14px;padding:8px 12px;border-radius:999px;background:#fef3c7;color:#92400e;font-weight:800;font-size:12px}
+    .card{margin-top:16px;background:#fff;border:1px solid #dbe4ef;border-radius:20px;padding:18px;box-shadow:0 8px 24px #102a4d12}
+    h2{margin:0 0 14px;font-size:20px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.full{grid-column:1/-1}
+    label{display:block;margin-bottom:6px;font-size:13px;font-weight:800;color:#41516a}input,select{width:100%;padding:13px 14px;border:1px solid #cbd5e1;border-radius:13px;background:#fff;font:inherit;color:#142033;outline:none}input:focus,select:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb1f}
+    button,.action{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:13px;padding:13px 16px;font-weight:800;text-decoration:none;cursor:pointer}.primary{width:100%;background:#0b72e7;color:#fff}.primary:disabled{opacity:.55;cursor:not-allowed}.secondary{background:#e8f1ff;color:#1556a7}.danger{background:#fee2e2;color:#b91c1c}
+    .auth-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.status{margin-top:12px;padding:12px;border-radius:12px;background:#eff6ff;color:#1e40af;font-weight:700}.status.error{background:#fef2f2;color:#b91c1c}.status.ok{background:#ecfdf5;color:#047857}
+    .result{margin-top:13px;border:1px solid #dbe4ef;border-radius:17px;padding:16px}.result h3{margin:0 0 8px;font-size:18px}.meta{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}.pill{padding:6px 9px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:800}.address{color:#475569;line-height:1.45}.phone{margin:10px 0;font-weight:800}.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.maps{background:#dbeafe;color:#1d4ed8}.call{background:#dcfce7;color:#047857}.web{background:#f1f5f9;color:#334155}.muted{color:#64748b;font-size:13px;line-height:1.45}.hidden{display:none!important}.loader{display:inline-block;width:16px;height:16px;border:2px solid #ffffff88;border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:560px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.actions{grid-template-columns:1fr}.auth-row{align-items:flex-start;flex-direction:column}.hero h1{font-size:23px}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>🔎 A TO Z Vendor Search</h1>
+      <p>Delivery city or district के पास unloading labour, crane, warehouse और emergency services खोजने का controlled test.</p>
+      <span class="badge">TESTING ONLY • NO DATABASE WRITE</span>
+    </section>
+
+    <section id="login-card" class="card">
+      <h2>🔐 Authorised Staff Login</h2>
+      <p class="muted">Login केवल Firebase Authentication के लिए है। Password इस file में save नहीं होता और browser में secure local session reuse होगा।</p>
+      <form id="login-form" class="grid">
+        <div class="full"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
+        <div class="full"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+        <div class="full"><button id="login-button" class="primary" type="submit">Login Once & Continue</button></div>
+      </form>
+      <div id="auth-message" class="status hidden"></div>
+    </section>
+
+    <section id="search-card" class="card hidden">
+      <div class="auth-row">
+        <div><h2 style="margin-bottom:4px">Nearby Vendor Search</h2><div id="signed-user" class="muted"></div></div>
+        <button id="logout-button" class="danger" type="button">Logout</button>
+      </div>
+      <form id="search-form" class="grid" style="margin-top:16px">
+        <div>
+          <label for="category">Vendor Category</label>
+          <select id="category" required>
+            <option value="unloading labour contractor">Unloading Labour</option>
+            <option value="loading and unloading service">Loading & Unloading Service</option>
+            <option value="crane service">Crane Service</option>
+            <option value="warehouse">Warehouse</option>
+            <option value="truck repair service">Truck Mechanic</option>
+            <option value="towing service">Towing Service</option>
+            <option value="packing material supplier">Packing Material Supplier</option>
+            <option value="AC repair service">AC Technician</option>
+            <option value="carpenter">Carpenter</option>
+            <option value="electrician">Electrician</option>
+            <option value="custom">Other / Custom</option>
+          </select>
+        </div>
+        <div id="custom-wrap" class="hidden"><label for="custom-category">Custom Category</label><input id="custom-category" maxlength="80" placeholder="e.g. hydraulic crane"></div>
+        <div class="full"><label for="location-text">Delivery Location / District / City</label><input id="location-text" maxlength="220" placeholder="e.g. Rourkela, Odisha 769001" required></div>
+        <div><label for="latitude">Delivery Latitude (optional)</label><input id="latitude" type="number" inputmode="decimal" step="any" min="-90" max="90" placeholder="22.2604"></div>
+        <div><label for="longitude">Delivery Longitude (optional)</label><input id="longitude" type="number" inputmode="decimal" step="any" min="-180" max="180" placeholder="84.8536"></div>
+        <div><label for="radius">Search Radius</label><select id="radius"><option value="10000">10 KM</option><option value="30000" selected>30 KM</option><option value="50000">50 KM</option></select></div>
+        <div><label for="page-size">Maximum Results</label><select id="page-size"><option value="5" selected>5 vendors</option><option value="10">10 vendors</option></select></div>
+        <div class="full"><button id="search-button" class="primary" type="submit">🔎 Find Nearby Vendors</button></div>
+      </form>
+      <div id="search-message" class="status hidden"></div>
+    </section>
+
+    <section id="results-card" class="card hidden">
+      <h2 id="results-title">Search Results</h2>
+      <p class="muted">Google business information availability पर निर्भर है। काम देने से पहले phone, rate, availability और identity manually verify करें।</p>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js';
+    import { getAuth, browserLocalPersistence, onAuthStateChanged, setPersistence, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js';
+    import { getFunctions, httpsCallable } from 'https://www.gstatic.com/firebasejs/12.10.0/firebase-functions.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyC4I13JSUkhun5DgpgLlnyiimTzdPobT14',
+      authDomain: 'az-packers-quotation.firebaseapp.com',
+      projectId: 'az-packers-quotation',
+      storageBucket: 'az-packers-quotation.firebasestorage.app',
+      messagingSenderId: '682004383688',
+      appId: '1:682004383688:web:b795a19579dba9a612a2fd'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const functions = getFunctions(app, 'asia-south1');
+    const searchNearbyVendors = httpsCallable(functions, 'searchNearbyVendors');
+    const byId = (id) => document.getElementById(id);
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, (character) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      })[character]);
+    }
+
+    function safeUrl(value) {
+      try {
+        const url = new URL(String(value || ''));
+        return url.protocol === 'https:' ? url.href : '';
+      } catch { return ''; }
+    }
+
+    function setMessage(element, message, type = '') {
+      element.textContent = message;
+      element.className = `status ${type}`.trim();
+      element.classList.toggle('hidden', !message);
+    }
+
+    function authError(error) {
+      const code = String(error?.code || '');
+      if (code.includes('invalid-credential')) return 'Email या password सही नहीं है।';
+      if (code.includes('too-many-requests')) return 'बहुत अधिक login attempts हुए हैं। कुछ देर बाद कोशिश करें।';
+      if (code.includes('unauthorized-domain')) return 'इस testing domain को Firebase Authorised Domains में अनुमति चाहिए।';
+      return `Login failed: ${code || 'Unknown error'}`;
+    }
+
+    function searchError(error) {
+      const code = String(error?.code || '').replace('functions/', '');
+      const message = error?.message || '';
+      if (code === 'not-found') return 'searchNearbyVendors function अभी deploy नहीं हुई है।';
+      if (code === 'unauthenticated') return 'Staff login session समाप्त हो गया है। दोबारा login करें।';
+      if (code === 'failed-precondition') return 'Places API key restriction, billing या secret configuration जाँचनी होगी।';
+      if (code === 'resource-exhausted') return 'Search limit या Google quota temporarily reached है।';
+      if (code === 'deadline-exceeded') return 'Search timeout हुआ। फिर कोशिश करें।';
+      return message || `Vendor search failed: ${code || 'Unknown error'}`;
+    }
+
+    function renderPlace(place) {
+      const mapsUrl = safeUrl(place.mapsUrl);
+      const websiteUrl = safeUrl(place.websiteUrl);
+      const phoneHref = String(place.phone || '').replace(/[^+\d]/g, '');
+      const rating = place.rating === null ? 'Rating unavailable' : `⭐ ${escapeHtml(place.rating)} (${escapeHtml(place.ratingCount || 0)})`;
+      const open = place.openNow === true ? '🟢 Open now' : place.openNow === false ? '🔴 Closed now' : 'Hours unavailable';
+      return `<article class="result">
+        <h3>${escapeHtml(place.name)}</h3>
+        <div class="address">📍 ${escapeHtml(place.address)}</div>
+        <div class="meta"><span class="pill">${rating}</span><span class="pill">${open}</span></div>
+        <div class="phone">${place.phone ? `📞 ${escapeHtml(place.phone)}` : '📞 Phone not publicly available'}</div>
+        <div class="actions">
+          ${phoneHref ? `<a class="action call" href="tel:${escapeHtml(phoneHref)}">📞 Call</a>` : '<span class="action call" style="opacity:.5">Call unavailable</span>'}
+          ${mapsUrl ? `<a class="action maps" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer">🗺️ Google Maps</a>` : ''}
+          ${websiteUrl ? `<a class="action web" href="${escapeHtml(websiteUrl)}" target="_blank" rel="noopener noreferrer">🌐 Website</a>` : ''}
+        </div>
+      </article>`;
+    }
+
+    byId('category').addEventListener('change', () => {
+      const custom = byId('category').value === 'custom';
+      byId('custom-wrap').classList.toggle('hidden', !custom);
+      byId('custom-category').required = custom;
+    });
+
+    byId('login-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const button = byId('login-button');
+      button.disabled = true;
+      setMessage(byId('auth-message'), 'Login हो रहा है…');
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        await signInWithEmailAndPassword(auth, byId('email').value.trim(), byId('password').value);
+        event.target.reset();
+      } catch (error) {
+        setMessage(byId('auth-message'), authError(error), 'error');
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    byId('logout-button').addEventListener('click', () => signOut(auth));
+
+    byId('search-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const category = byId('category').value === 'custom' ? byId('custom-category').value.trim() : byId('category').value;
+      const latitudeValue = byId('latitude').value.trim();
+      const longitudeValue = byId('longitude').value.trim();
+      if ((latitudeValue && !longitudeValue) || (!latitudeValue && longitudeValue)) {
+        setMessage(byId('search-message'), 'Latitude और longitude दोनों साथ भरें, या दोनों खाली रखें।', 'error');
+        return;
+      }
+      const payload = {
+        category,
+        locationText: byId('location-text').value.trim(),
+        radiusMeters: Number(byId('radius').value),
+        pageSize: Number(byId('page-size').value)
+      };
+      if (latitudeValue && longitudeValue) {
+        payload.latitude = Number(latitudeValue);
+        payload.longitude = Number(longitudeValue);
+      }
+
+      const button = byId('search-button');
+      button.disabled = true;
+      button.innerHTML = '<span class="loader"></span> Searching Google Places…';
+      setMessage(byId('search-message'), 'Nearby vendors खोजे जा रहे हैं…');
+      byId('results-card').classList.add('hidden');
+      try {
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(Object.assign(new Error('Search timed out.'), { code: 'functions/deadline-exceeded' })), 22000));
+        const response = await Promise.race([searchNearbyVendors(payload), timeout]);
+        const data = response?.data || {};
+        const places = Array.isArray(data.places) ? data.places : [];
+        setMessage(byId('search-message'), `${places.length} vendor result मिले।`, 'ok');
+        byId('results-title').textContent = `${data.category || category} — ${data.locationText || payload.locationText}`;
+        byId('results').innerHTML = places.length ? places.map(renderPlace).join('') : '<div class="status">कोई matching public Google business listing नहीं मिली। Search location या category बदलकर कोशिश करें।</div>';
+        byId('results-card').classList.remove('hidden');
+      } catch (error) {
+        setMessage(byId('search-message'), searchError(error), 'error');
+      } finally {
+        button.disabled = false;
+        button.textContent = '🔎 Find Nearby Vendors';
+      }
+    });
+
+    setPersistence(auth, browserLocalPersistence).catch(() => {});
+    onAuthStateChanged(auth, (user) => {
+      byId('login-card').classList.toggle('hidden', Boolean(user));
+      byId('search-card').classList.toggle('hidden', !user);
+      byId('results-card').classList.add('hidden');
+      setMessage(byId('search-message'), '');
+      if (user) {
+        byId('signed-user').textContent = `Connected: ${user.email || user.uid}`;
+      }
+    });
+  </script>
+</body>
+</html>
